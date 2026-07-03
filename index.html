@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Assistant</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#14151a">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+  :root {
+    --bg: #14151a;
+    --panel: #1d1f26;
+    --panel2: #262933;
+    --border: #33374a;
+    --text: #e8e9ee;
+    --muted: #9297ab;
+    --accent: #7c9eff;
+    --accent2: #6ee7b7;
+    --warn: #ffb86b;
+    --danger: #ff8080;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    min-height: 100vh;
+  }
+  #sidebar {
+    width: 280px;
+    background: var(--panel);
+    border-right: 1px solid var(--border);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  #main {
+    flex: 1;
+    padding: 28px 40px;
+    max-width: 820px;
+    margin: 0 auto;
+  }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  .sub { color: var(--muted); font-size: 13px; margin-bottom: 8px; }
+  label { font-size: 12px; color: var(--muted); display: block; margin-bottom: 4px; }
+  textarea, input, select {
+    width: 100%;
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-family: inherit;
+    font-size: 13px;
+    resize: vertical;
+  }
+  textarea:focus, input:focus, select:focus { outline: 1px solid var(--accent); }
+  #aboutMe { min-height: 90px; }
+  .field { margin-bottom: 12px; }
+  .tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 20px; }
+  .tab {
+    padding: 8px 14px;
+    border-radius: 20px;
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 13px;
+  }
+  .tab.active { background: var(--accent); color: #0e0f13; border-color: var(--accent); font-weight: 600; }
+  .checkins { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px;
+    margin-bottom: 18px;
+  }
+  button.primary {
+    background: var(--accent);
+    color: #0e0f13;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  button.primary:disabled { opacity: 0.5; cursor: default; }
+  button.ghost {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+  }
+  #output {
+    white-space: pre-wrap;
+    line-height: 1.6;
+    font-size: 14.5px;
+    min-height: 40px;
+  }
+  #output:empty::before { content: "Response will appear here."; color: var(--muted); }
+  .firstStep {
+    background: rgba(124,158,255,0.12);
+    border: 1px solid var(--accent);
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-bottom: 12px;
+    font-weight: 600;
+  }
+  .histItem {
+    border-bottom: 1px solid var(--border);
+    padding: 10px 0;
+    font-size: 12.5px;
+  }
+  .histItem .mode { color: var(--accent2); font-weight: 600; }
+  .histItem .input { color: var(--muted); margin: 2px 0; }
+  .fbRow { display: flex; gap: 6px; margin-top: 4px; }
+  .fbRow button { font-size: 11px; padding: 3px 8px; }
+  .fbRow button.picked { background: var(--accent2); color: #0e0f13; border-color: var(--accent2); }
+  #status { font-size: 12px; color: var(--muted); margin-top: 8px; }
+  #status.err { color: var(--danger); }
+  .row { display: flex; gap: 10px; align-items: center; }
+  details summary { cursor: pointer; color: var(--muted); font-size: 12px; }
+  .modeDesc { color: var(--muted); font-size: 12.5px; margin-bottom: 14px; }
+
+  .util-panel { display: none; }
+  #focusTaskView {
+    text-align: center;
+    padding: 40px 10px;
+  }
+  #focusTaskView .taskText {
+    font-size: 26px;
+    font-weight: 600;
+    line-height: 1.4;
+    margin-bottom: 24px;
+  }
+  #focusProgress { color: var(--muted); font-size: 12.5px; margin-bottom: 18px; }
+  .focusBtnRow { display: flex; gap: 10px; justify-content: center; }
+  #timerDisplay {
+    font-size: 56px;
+    font-weight: 700;
+    text-align: center;
+    letter-spacing: 1px;
+    margin: 10px 0 4px;
+  }
+  #timerPhase { text-align: center; color: var(--accent2); font-weight: 600; margin-bottom: 18px; }
+  .timerSettings { display: flex; gap: 16px; margin-bottom: 18px; }
+  .timerSettings .field { flex: 1; margin-bottom: 0; }
+  .timerBtnRow { display: flex; gap: 10px; justify-content: center; }
+  #breathCircle {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    background: rgba(124,158,255,0.18);
+    border: 2px solid var(--accent);
+    margin: 24px auto;
+    transform: scale(0.6);
+    transition: transform 4s ease-in-out;
+  }
+  #breathLabel { text-align: center; font-size: 16px; font-weight: 600; color: var(--accent2); margin-bottom: 6px; }
+  #breathCount { text-align: center; color: var(--muted); font-size: 12.5px; }
+  #brainDumpInput { min-height: 140px; }
+</style>
+</head>
+<body>
+
+<div id="sidebar">
+  <div>
+    <h1>Assistant</h1>
+    <div class="sub">install on your phone · powered by Claude</div>
+  </div>
+
+  <div class="field">
+    <label for="aboutMe">About me (always remembered)</label>
+    <textarea id="aboutMe" placeholder="e.g. I stall out after long breaks. Mornings are hard. I overcommit and then panic near deadlines."></textarea>
+  </div>
+
+  <details open>
+    <summary>Settings</summary>
+    <div class="field" style="margin-top:10px;">
+      <label for="modelSelect">Model</label>
+      <select id="modelSelect">
+        <option value="claude-haiku-4-5-20251001">Haiku 4.5 (fast, cheap)</option>
+        <option value="claude-sonnet-5">Sonnet 5 (smarter)</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="pinInput">Access PIN</label>
+      <input id="pinInput" type="password" placeholder="Same PIN set in Vercel">
+    </div>
+  </details>
+
+  <div class="field" style="flex:1; overflow-y:auto;">
+    <label>Recent history</label>
+    <div id="history"></div>
+    <button class="ghost" id="clearHistory" style="margin-top:8px;">Clear history</button>
+  </div>
+</div>
+
+<div id="main">
+  <div class="tabs">
+    <div class="tab active" data-mode="breakdown">Break it down</div>
+    <div class="tab" data-mode="tone">Tone check</div>
+    <div class="tab" data-mode="reassure">Reassurance</div>
+    <div class="tab" data-mode="decide">Should I do this?</div>
+    <div class="tab" data-mode="focus">Focus</div>
+    <div class="tab" data-mode="timer">Timer</div>
+    <div class="tab" data-mode="braindump">Brain dump</div>
+  </div>
+
+  <div class="card ai-panel">
+    <div class="modeDesc" id="modeDesc"></div>
+
+    <div id="checkinBlock" class="checkins">
+      <div>
+        <label for="energy">Energy right now</label>
+        <select id="energy">
+          <option value="very low">Very low</option>
+          <option value="low" selected>Low</option>
+          <option value="okay">Okay</option>
+          <option value="good">Good</option>
+          <option value="high">High</option>
+        </select>
+      </div>
+      <div>
+        <label for="mood">Mood</label>
+        <select id="mood">
+          <option value="overwhelmed">Overwhelmed</option>
+          <option value="anxious">Anxious</option>
+          <option value="tired">Tired</option>
+          <option value="neutral" selected>Neutral</option>
+          <option value="motivated">Motivated</option>
+        </select>
+      </div>
+      <div>
+        <label for="deadline">Deadline (optional)</label>
+        <input id="deadline" placeholder="e.g. today 5pm, none">
+      </div>
+    </div>
+
+    <div class="field">
+      <label id="inputLabel" for="userInput">What's the task?</label>
+      <textarea id="userInput" style="min-height:90px;" placeholder="Type here..."></textarea>
+    </div>
+
+    <div class="row">
+      <button class="primary" id="submitBtn">Go</button>
+      <span id="status"></span>
+    </div>
+  </div>
+
+  <div class="card ai-panel">
+    <div id="firstStepBox"></div>
+    <div id="output"></div>
+  </div>
+
+  <div class="card util-panel" id="focusPanel">
+    <div class="modeDesc">Enter your tasks, one per line. Focus mode shows only the next one.</div>
+    <div id="focusEditView">
+      <div class="field">
+        <textarea id="focusInput" style="min-height:140px;" placeholder="e.g.&#10;Open the report doc&#10;Write the intro paragraph&#10;Email Sarah the draft"></textarea>
+      </div>
+      <button class="primary" id="focusStartBtn">Start focus</button>
+    </div>
+    <div id="focusTaskView" style="display:none;">
+      <div id="focusProgress"></div>
+      <div class="taskText" id="focusCurrentTask"></div>
+      <div class="focusBtnRow">
+        <button class="primary" id="focusDoneBtn">Done</button>
+        <button class="ghost" id="focusEditBtn">Edit list</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card util-panel" id="timerPanel">
+    <div class="modeDesc">Work in focused intervals with an enforced break after each.</div>
+    <div class="timerSettings">
+      <div class="field">
+        <label for="workMinutes">Work minutes</label>
+        <input id="workMinutes" type="number" min="1" max="120" value="25">
+      </div>
+      <div class="field">
+        <label for="breakMinutes">Break minutes</label>
+        <input id="breakMinutes" type="number" min="1" max="60" value="5">
+      </div>
+    </div>
+    <div id="timerPhase">Ready</div>
+    <div id="timerDisplay">25:00</div>
+    <div class="timerBtnRow">
+      <button class="primary" id="timerStartBtn">Start</button>
+      <button class="ghost" id="timerStopBtn" style="display:none;">Stop session</button>
+    </div>
+  </div>
+
+  <div class="card util-panel" id="braindumpPanel">
+    <div class="modeDesc">Empty your head, then breathe.</div>
+    <div class="field">
+      <textarea id="brainDumpInput" placeholder="Just type. No structure needed."></textarea>
+    </div>
+    <button class="ghost" id="calmDownBtn">Start calm-down</button>
+    <div id="breathBlock" style="display:none;">
+      <div id="breathLabel">Breathe in</div>
+      <div id="breathCircle"></div>
+      <div id="breathCount">Cycle 1</div>
+      <div style="text-align:center;"><button class="ghost" id="stopBreathBtn">Stop</button></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const modeConfig = {
+  breakdown: {
+    label: "What's the task?",
+    placeholder: "e.g. clean the kitchen, start the report, reply to that email I've been avoiding",
+    desc: "Type the thing you're stuck on. It gets broken into small, concrete steps sized to your energy right now.",
+    showCheckin: true,
+    systemExtra: `Break the user's task into small, concrete, sequential steps. Size the steps to their stated energy and mood: low energy or overwhelmed mood means smaller, more granular steps. Start your response with a single line "FIRST: <the one tiny obvious next action>", then a blank line, then a numbered list of the remaining steps. No commentary, no encouragement filler, no summary at the end.`
+  },
+  tone: {
+    label: "Paste the message you wrote",
+    placeholder: "Paste text you're about to send...",
+    desc: "Paste something you wrote before you send it. You'll get an honest read on how it actually comes across.",
+    showCheckin: false,
+    systemExtra: `The user will paste a message they are about to send. Tell them honestly and briefly how it reads (tone, clarity, risk of being misread), in 2-4 sentences. Then, only if it would genuinely help, offer one rewritten version. Do not be sycophantic. Do not pad the response.`
+  },
+  reassure: {
+    label: "What happened?",
+    placeholder: "e.g. I didn't get to the thing I promised myself I'd do today",
+    desc: "Tell it what you did or didn't do. You get honest, non-judgmental encouragement back, not a lecture.",
+    showCheckin: false,
+    systemExtra: `The user is telling you what they did or didn't accomplish. Respond with honest, warm, non-judgmental encouragement in 2-5 sentences. Do not minimize the difficulty and do not lecture or moralize. Do not enable avoidance either -- if relevant, gently name one small next step, but only if it fits naturally.`
+  },
+  decide: {
+    label: "What's the decision?",
+    placeholder: "e.g. should I skip the gym today and just rest?",
+    desc: "Describe a decision you're weighing. You get a straight, honest read, not a wishy-washy list of pros and cons.",
+    showCheckin: false,
+    systemExtra: `The user is describing a decision they are about to make. Give a direct, honest opinion on whether it's a reasonable call in 2-4 sentences, plus at most one thing worth considering if it matters. Do not hedge excessively or give a generic pros/cons list.`
+  }
+};
+const utilModes = ["focus", "timer", "braindump"];
+
+let currentMode = "breakdown";
+const $ = (id) => document.getElementById(id);
+
+function loadState() {
+  try { return JSON.parse(localStorage.getItem("adhdAssistant") || "{}"); }
+  catch { return {}; }
+}
+function saveState(state) {
+  localStorage.setItem("adhdAssistant", JSON.stringify(state));
+}
+let state = Object.assign({
+  aboutMe: "",
+  history: [],
+  focusQueue: [],
+  focusRunning: false,
+  timerWork: 25,
+  timerBreak: 5,
+  brainDump: "",
+  pin: "",
+  model: "claude-haiku-4-5-20251001"
+}, loadState());
+
+$("aboutMe").value = state.aboutMe || "";
+$("aboutMe").addEventListener("input", () => {
+  state.aboutMe = $("aboutMe").value;
+  saveState(state);
+});
+
+$("modelSelect").value = state.model;
+$("modelSelect").addEventListener("change", () => {
+  state.model = $("modelSelect").value;
+  saveState(state);
+});
+$("pinInput").value = state.pin;
+$("pinInput").addEventListener("input", () => {
+  state.pin = $("pinInput").value;
+  saveState(state);
+});
+
+function renderHistory() {
+  const el = $("history");
+  el.innerHTML = "";
+  const recent = state.history.slice(-8).reverse();
+  if (!recent.length) { el.innerHTML = '<div class="sub">Nothing yet.</div>'; return; }
+  recent.forEach(item => {
+    const div = document.createElement("div");
+    div.className = "histItem";
+    const fb = item.feedback;
+    div.innerHTML = `
+      <div class="mode">${item.mode}</div>
+      <div class="input">${escapeHtml(item.input.slice(0, 60))}${item.input.length > 60 ? "…" : ""}</div>
+      <div class="fbRow">
+        <button class="ghost fb-worked ${fb === "worked" ? "picked" : ""}" data-id="${item.id}">helped</button>
+        <button class="ghost fb-notworked ${fb === "notworked" ? "picked" : ""}" data-id="${item.id}">didn't help</button>
+      </div>`;
+    el.appendChild(div);
+  });
+  el.querySelectorAll(".fb-worked").forEach(b => b.addEventListener("click", () => setFeedback(b.dataset.id, "worked")));
+  el.querySelectorAll(".fb-notworked").forEach(b => b.addEventListener("click", () => setFeedback(b.dataset.id, "notworked")));
+}
+function setFeedback(id, val) {
+  const item = state.history.find(h => h.id === id);
+  if (!item) return;
+  item.feedback = item.feedback === val ? null : val;
+  saveState(state);
+  renderHistory();
+}
+function escapeHtml(s) {
+  return s.replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+}
+
+$("clearHistory").addEventListener("click", () => {
+  if (!confirm("Clear all local history?")) return;
+  state.history = [];
+  saveState(state);
+  renderHistory();
+});
+
+document.querySelectorAll(".tab").forEach(tab => {
+  tab.addEventListener("click", () => {
+    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+    tab.classList.add("active");
+    currentMode = tab.dataset.mode;
+    if (utilModes.includes(currentMode)) {
+      showUtilPanel(currentMode);
+    } else {
+      showAiPanels();
+      applyModeUI();
+    }
+  });
+});
+
+function showAiPanels() {
+  document.querySelectorAll(".ai-panel").forEach(p => p.style.display = "");
+  document.querySelectorAll(".util-panel").forEach(p => p.style.display = "none");
+}
+function showUtilPanel(mode) {
+  document.querySelectorAll(".ai-panel").forEach(p => p.style.display = "none");
+  document.querySelectorAll(".util-panel").forEach(p => p.style.display = "none");
+  $(mode + "Panel").style.display = "block";
+  if (mode === "focus") renderFocusPanel();
+  if (mode === "timer") renderTimerPanel();
+  if (mode === "braindump") renderBraindumpPanel();
+}
+
+function applyModeUI() {
+  const cfg = modeConfig[currentMode];
+  $("modeDesc").textContent = cfg.desc;
+  $("inputLabel").textContent = cfg.label;
+  $("userInput").placeholder = cfg.placeholder;
+  $("checkinBlock").style.display = cfg.showCheckin ? "grid" : "none";
+  $("output").innerHTML = "";
+  $("firstStepBox").innerHTML = "";
+  $("status").textContent = "";
+}
+applyModeUI();
+
+function buildHistorySummary() {
+  const recent = state.history.slice(-5);
+  if (!recent.length) return "";
+  const lines = recent.map(h => {
+    const fb = h.feedback ? ` (user said this ${h.feedback === "worked" ? "helped" : "did not help"})` : "";
+    return `- [${h.mode}] input: "${h.input.slice(0,80)}"${fb}`;
+  });
+  return `Recent interactions with this user, for context on what has and hasn't worked:\n${lines.join("\n")}\n`;
+}
+
+function buildSystemPrompt(cfg) {
+  let sys = `You are a direct, concise, warm personal assistant for someone with ADHD. Never be preachy, never pad with filler, never apologize. Get straight to useful content.\n\n`;
+  if (state.aboutMe.trim()) {
+    sys += `What this user has told you about themselves:\n${state.aboutMe.trim()}\n\n`;
+  }
+  const hist = buildHistorySummary();
+  if (hist) sys += hist + "\n";
+  sys += cfg.systemExtra;
+  return sys;
+}
+
+$("submitBtn").addEventListener("click", async () => {
+  const cfg = modeConfig[currentMode];
+  const input = $("userInput").value.trim();
+  if (!input) return;
+
+  let userMsg = input;
+  if (cfg.showCheckin) {
+    userMsg = `Task: ${input}\nEnergy: ${$("energy").value}\nMood: ${$("mood").value}\nDeadline: ${$("deadline").value || "none"}`;
+  }
+
+  const statusEl = $("status");
+  const outputEl = $("output");
+  const firstStepEl = $("firstStepBox");
+  outputEl.textContent = "";
+  firstStepEl.innerHTML = "";
+  statusEl.className = "";
+  statusEl.textContent = "thinking…";
+  $("submitBtn").disabled = true;
+
+  try {
+    const res = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        pin: state.pin,
+        model: state.model,
+        system: buildSystemPrompt(cfg),
+        message: userMsg
+      })
+    });
+    const data = await res.json().catch(() => ({}));
+
+    if (res.status === 401) {
+      state.pin = "";
+      saveState(state);
+      $("pinInput").value = "";
+      statusEl.className = "err";
+      statusEl.textContent = "Wrong PIN. Enter the access PIN in Settings and try again.";
+      return;
+    }
+    if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+
+    const full = data.text || "";
+    renderOutput(full, cfg);
+    statusEl.textContent = "done";
+
+    state.history.push({
+      id: String(Date.now()) + Math.random().toString(36).slice(2,7),
+      ts: Date.now(),
+      mode: currentMode,
+      input,
+      output: full,
+      feedback: null
+    });
+    if (state.history.length > 100) state.history = state.history.slice(-100);
+    saveState(state);
+    renderHistory();
+  } catch (e) {
+    statusEl.className = "err";
+    statusEl.textContent = `Error: ${e.message}`;
+  } finally {
+    $("submitBtn").disabled = false;
+  }
+});
+
+function renderOutput(text, cfg) {
+  if (cfg && currentMode === "breakdown") {
+    const m = text.match(/^FIRST:\s*(.+?)(?:\n|$)/i);
+    if (m) {
+      $("firstStepBox").innerHTML = `<div class="firstStep">Do this first: ${escapeHtml(m[1])}</div>`;
+      $("output").textContent = text.replace(/^FIRST:.*(?:\n|$)/i, "").trim();
+      return;
+    }
+  }
+  $("firstStepBox").innerHTML = "";
+  $("output").textContent = text;
+}
+
+function renderFocusPanel() {
+  $("focusInput").value = state.focusQueue.join("\n");
+  if (state.focusRunning && state.focusQueue.length) {
+    $("focusEditView").style.display = "none";
+    $("focusTaskView").style.display = "block";
+    $("focusCurrentTask").textContent = state.focusQueue[0];
+    $("focusProgress").textContent = `${state.focusQueue.length} task${state.focusQueue.length === 1 ? "" : "s"} left`;
+    $("focusDoneBtn").style.display = "inline-block";
+  } else if (state.focusRunning && !state.focusQueue.length) {
+    $("focusEditView").style.display = "none";
+    $("focusTaskView").style.display = "block";
+    $("focusCurrentTask").textContent = "All done.";
+    $("focusProgress").textContent = "";
+    $("focusDoneBtn").style.display = "none";
+  } else {
+    $("focusEditView").style.display = "block";
+    $("focusTaskView").style.display = "none";
+  }
+}
+$("focusStartBtn").addEventListener("click", () => {
+  const lines = $("focusInput").value.split("\n").map(s => s.trim()).filter(Boolean);
+  state.focusQueue = lines;
+  state.focusRunning = lines.length > 0;
+  saveState(state);
+  renderFocusPanel();
+});
+$("focusDoneBtn").addEventListener("click", () => {
+  state.focusQueue.shift();
+  saveState(state);
+  renderFocusPanel();
+});
+$("focusEditBtn").addEventListener("click", () => {
+  state.focusRunning = false;
+  saveState(state);
+  renderFocusPanel();
+});
+
+let timerHandle = null;
+let timerPhase = "idle";
+let timerEnd = 0;
+
+function formatTime(ms) {
+  const total = Math.max(0, Math.ceil(ms / 1000));
+  const m = Math.floor(total / 60);
+  const s = total % 60;
+  return `${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`;
+}
+function renderTimerPanel() {
+  $("workMinutes").value = state.timerWork;
+  $("breakMinutes").value = state.timerBreak;
+  updateTimerDisplay();
+}
+function updateTimerDisplay() {
+  if (timerPhase === "idle") {
+    $("timerPhase").textContent = "Ready";
+    $("timerDisplay").textContent = `${String(state.timerWork).padStart(2,"0")}:00`;
+    $("timerStartBtn").style.display = "inline-block";
+    $("timerStopBtn").style.display = "none";
+  } else {
+    $("timerPhase").textContent = timerPhase === "work" ? "Work" : "Break";
+    $("timerDisplay").textContent = formatTime(timerEnd - Date.now());
+    $("timerStartBtn").style.display = "none";
+    $("timerStopBtn").style.display = "inline-block";
+  }
+}
+$("workMinutes").addEventListener("change", () => {
+  state.timerWork = Math.max(1, parseInt($("workMinutes").value, 10) || 25);
+  saveState(state);
+  if (timerPhase === "idle") updateTimerDisplay();
+});
+$("breakMinutes").addEventListener("change", () => {
+  state.timerBreak = Math.max(1, parseInt($("breakMinutes").value, 10) || 5);
+  saveState(state);
+});
+$("timerStartBtn").addEventListener("click", () => {
+  timerPhase = "work";
+  timerEnd = Date.now() + state.timerWork * 60000;
+  tickTimer();
+  clearInterval(timerHandle);
+  timerHandle = setInterval(tickTimer, 250);
+});
+$("timerStopBtn").addEventListener("click", () => {
+  if (!confirm("End this session now? A break in progress won't count if you stop early.")) return;
+  clearInterval(timerHandle);
+  timerPhase = "idle";
+  updateTimerDisplay();
+});
+function tickTimer() {
+  const remaining = timerEnd - Date.now();
+  if (remaining <= 0) {
+    if (timerPhase === "work") {
+      timerPhase = "break";
+      timerEnd = Date.now() + state.timerBreak * 60000;
+    } else {
+      clearInterval(timerHandle);
+      timerPhase = "idle";
+    }
+  }
+  updateTimerDisplay();
+}
+
+$("brainDumpInput").addEventListener("input", () => {
+  state.brainDump = $("brainDumpInput").value;
+  saveState(state);
+});
+function renderBraindumpPanel() {
+  $("brainDumpInput").value = state.brainDump || "";
+}
+
+let breathHandle = null;
+let breathCycle = 1;
+const breathPhases = ["Breathe in", "Hold", "Breathe out", "Hold"];
+$("calmDownBtn").addEventListener("click", () => {
+  $("breathBlock").style.display = "block";
+  breathCycle = 1;
+  runBreathCycle();
+});
+$("stopBreathBtn").addEventListener("click", stopBreath);
+function runBreathCycle() {
+  let phaseIndex = 0;
+  $("breathCircle").style.transform = "scale(1)";
+  $("breathLabel").textContent = breathPhases[0];
+  $("breathCount").textContent = `Cycle ${breathCycle}`;
+  clearInterval(breathHandle);
+  breathHandle = setInterval(() => {
+    phaseIndex = (phaseIndex + 1) % 4;
+    $("breathLabel").textContent = breathPhases[phaseIndex];
+    if (phaseIndex === 0) {
+      breathCycle++;
+      $("breathCount").textContent = `Cycle ${breathCycle}`;
+      $("breathCircle").style.transform = "scale(1)";
+    } else if (phaseIndex === 2) {
+      $("breathCircle").style.transform = "scale(0.6)";
+    }
+  }, 4000);
+}
+function stopBreath() {
+  clearInterval(breathHandle);
+  $("breathBlock").style.display = "none";
+}
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("sw.js").catch(() => {});
+  });
+}
+
+renderHistory();
+</script>
+</body>
+</html>
