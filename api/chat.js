@@ -15,21 +15,21 @@ export default async function handler(req, res) {
     return;
   }
 
+  const modelId = model || "gemini-2.0-flash";
+
   try {
-    const upstream = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-        "x-api-key": process.env.ANTHROPIC_API_KEY,
-        "anthropic-version": "2023-06-01"
-      },
-      body: JSON.stringify({
-        model: model || "claude-haiku-4-5-20251001",
-        max_tokens: 1024,
-        system: system || "",
-        messages: [{ role: "user", content: message }]
-      })
-    });
+    const upstream = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${process.env.GEMINI_API_KEY}`,
+      {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          contents: [{ role: "user", parts: [{ text: message }] }],
+          systemInstruction: { parts: [{ text: system || "" }] },
+          generationConfig: { maxOutputTokens: 1024 }
+        })
+      }
+    );
 
     const data = await upstream.json();
 
@@ -38,9 +38,10 @@ export default async function handler(req, res) {
       return;
     }
 
-    const text = (data.content || []).map(block => block.text || "").join("");
+    const parts = data.candidates?.[0]?.content?.parts || [];
+    const text = parts.map(p => p.text || "").join("");
     res.status(200).json({ text });
   } catch (e) {
-    res.status(500).json({ error: "Server error contacting Anthropic" });
+    res.status(500).json({ error: "Server error contacting Gemini" });
   }
 }
