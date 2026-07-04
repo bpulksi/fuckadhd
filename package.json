@@ -1,0 +1,9 @@
+{
+  "name": "fuck-adhd",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@upstash/redis": "^1.34.0",
+    "web-push": "^3.6.7"
+  }
+}

@@ -1,4 +1,4 @@
-const CACHE_NAME = "adhd-assistant-shell-v2";
+const CACHE_NAME = "adhd-assistant-shell-v5";
 const SHELL_FILES = ["/", "/index.html", "/manifest.json", "/icon-192.png", "/icon-512.png"];
 
 self.addEventListener("install", event => {
@@ -24,5 +24,32 @@ self.addEventListener("fetch", event => {
   }
   event.respondWith(
     caches.match(event.request).then(cached => cached || fetch(event.request))
+  );
+});
+
+self.addEventListener("push", event => {
+  let data = { title: "Don't forget", body: "You have a reminder." };
+  try { data = event.data.json(); } catch {}
+  event.waitUntil(
+    self.registration.showNotification(data.title || "Don't forget", {
+      body: data.body || "",
+      icon: "/icon-192.png",
+      badge: "/icon-192.png",
+      vibrate: [200, 100, 200],
+      tag: "fuckadhd-reminder-" + Date.now(),
+      requireInteraction: true
+    })
+  );
+});
+
+self.addEventListener("notificationclick", event => {
+  event.notification.close();
+  event.waitUntil(
+    clients.matchAll({ type: "window", includeUncontrolled: true }).then(list => {
+      for (const client of list) {
+        if ("focus" in client) return client.focus();
+      }
+      return clients.openWindow("/");
+    })
   );
 });

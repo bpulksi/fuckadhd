@@ -1,12 +1,24 @@
+const DEFAULT_BASE_URL = "https://api.groq.com/openai/v1";
+const DEFAULT_MODEL = "llama-3.3-70b-versatile";
+
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     res.status(405).json({ error: "Method not allowed" });
     return;
   }
 
-  const { pin, model, system, message } = req.body || {};
+  if (!process.env.APP_PIN) {
+    res.status(500).json({ error: "Server not configured: APP_PIN env var is missing in Vercel" });
+    return;
+  }
+  if (!process.env.AI_API_KEY) {
+    res.status(500).json({ error: "Server not configured: AI_API_KEY env var is missing in Vercel" });
+    return;
+  }
 
-  if (!process.env.APP_PIN || pin !== process.env.APP_PIN) {
+  const { pin, system, message } = req.body || {};
+
+  if (pin !== process.env.APP_PIN) {
     res.status(401).json({ error: "Invalid PIN" });
     return;
   }
@@ -15,33 +27,38 @@ export default async function handler(req, res) {
     return;
   }
 
-  const modelId = model || "gemini-2.0-flash";
+  const baseUrl = (process.env.AI_BASE_URL || DEFAULT_BASE_URL).replace(/\/$/, "");
+  const model = process.env.AI_MODEL || DEFAULT_MODEL;
 
   try {
-    const upstream = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${process.env.GEMINI_API_KEY}`,
-      {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({
-          contents: [{ role: "user", parts: [{ text: message }] }],
-          systemInstruction: { parts: [{ text: system || "" }] },
-          generationConfig: { maxOutputTokens: 1024 }
-        })
-      }
-    );
+    const upstream = await fetch(`${baseUrl}/chat/completions`, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "authorization": `Bearer ${process.env.AI_API_KEY}`
+      },
+      body: JSON.stringify({
+        model,
+        max_tokens: 1024,
+        messages: [
+          { role: "system", content: system || "" },
+          { role: "user", content: message }
+        ]
+      })
+    });
 
-    const data = await upstream.json();
+    const data = await upstream.json().catch(() => ({}));
 
     if (!upstream.ok) {
-      res.status(upstream.status).json({ error: data.error?.message || "Upstream error" });
+      res.status(upstream.status).json({
+        error: `AI provider error (${upstream.status}): ${data.error?.message || JSON.stringify(data.error) || "unknown upstream error"}`
+      });
       return;
     }
 
-    const parts = data.candidates?.[0]?.content?.parts || [];
-    const text = parts.map(p => p.text || "").join("");
+    const text = data.choices?.[0]?.message?.content || "";
     res.status(200).json({ text });
   } catch (e) {
-    res.status(500).json({ error: "Server error contacting Gemini" });
+    res.status(500).json({ error: "Server error contacting the AI provider" });
   }
 }
