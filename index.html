@@ -251,9 +251,142 @@
   #breathLabel { font-size: 17px; font-weight: 600; color: var(--accent2); letter-spacing: 1px; }
   #breathCount { color: var(--muted); font-size: 13px; margin: 6px 0 16px; }
 
+  #winsLine {
+    margin-top: 10px;
+    font-size: 12.5px;
+    color: var(--muted);
+    cursor: pointer;
+  }
+  #winsLine .star { position: static; display: inline; background: none; animation: none; color: var(--accent2); opacity: 1; }
+  #todayBlock { margin: 0 0 22px; }
+  #todayBlock .blockTitle { font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+  .planItem {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 4px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    min-height: 50px;
+  }
+  .planItem:first-of-type { border-top: 1px solid var(--border); }
+  .planCheck {
+    flex: 0 0 auto;
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border-strong);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px;
+    color: transparent;
+  }
+  .planItem.done .planCheck { background: var(--accent2); border-color: var(--accent2); color: #0e0f13; }
+  .planItem .planText { flex: 1; font-size: 15px; line-height: 1.4; }
+  .planItem.done .planText { color: var(--muted); text-decoration: line-through; }
+  .planItem .planDel { background: none; border: none; color: var(--muted); font-size: 15px; padding: 8px; cursor: pointer; opacity: 0.6; }
+  .planRowSmall { display: flex; gap: 8px; margin-top: 12px; }
+  .planRowSmall input { flex: 1; }
+  .planRowSmall button { flex: 0 0 auto; }
+  #planFormWrap .checkins { margin: 0 0 12px; }
+  #planStatus { text-align: center; }
+  #dailyWisdom {
+    margin-top: 5vh;
+    text-align: center;
+    color: var(--muted);
+    font-size: 13.5px;
+    font-style: italic;
+    line-height: 1.6;
+    padding: 0 10px;
+  }
+  #burstOverlay {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    text-align: center;
+    padding: 0 30px;
+  }
+  #burstOverlay.show { display: flex; }
+  #burstRing {
+    position: absolute;
+    left: 50%; top: 50%;
+    width: 60px; height: 60px;
+    margin: -30px 0 0 -30px;
+    border-radius: 50%;
+    border: 2px solid var(--accent2);
+    box-shadow: 0 0 40px rgba(110, 231, 183, 0.6);
+    animation: burstRing 1.6s ease-out forwards;
+  }
+  #burstOverlay.deep #burstRing { border-color: var(--accent); box-shadow: 0 0 60px rgba(139, 124, 255, 0.8); animation-duration: 2.4s; }
+  @keyframes burstRing {
+    0% { transform: scale(0.4); opacity: 1; }
+    100% { transform: scale(9); opacity: 0; }
+  }
+  #burstText {
+    position: relative;
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--text);
+    text-shadow: 0 0 20px rgba(110, 231, 183, 0.5);
+    animation: burstText 2.2s ease-out forwards;
+    max-width: 420px;
+  }
+  #burstOverlay.deep #burstText { font-size: 17.5px; animation-duration: 3.4s; }
+  @keyframes burstText {
+    0% { opacity: 0; transform: translateY(8px); }
+    15% { opacity: 1; transform: translateY(0); }
+    80% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+  #pathOverlay {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(7, 7, 20, 0.85);
+    padding: 20px;
+  }
+  #pathOverlay.show { display: flex; }
+  #pathCard {
+    background: var(--panel2);
+    border: 1px solid var(--border-strong);
+    border-radius: 18px;
+    padding: 22px 20px;
+    max-width: 420px;
+    width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+  #pathCard h2 { font-size: 16px; margin: 0 0 4px; letter-spacing: 1px; }
+  #pathCard .sub { color: var(--muted); font-size: 12.5px; margin-bottom: 14px; }
+  .pathStage { padding: 8px 10px; border-radius: 10px; margin-bottom: 4px; font-size: 13.5px; color: var(--muted); }
+  .pathStage .meaning { font-size: 12px; opacity: 0.8; margin-top: 2px; }
+  .pathStage.current { background: rgba(139, 124, 255, 0.14); color: var(--text); border: 1px solid var(--border-strong); }
+  .pathStage.reached { color: var(--text); }
+  .goRow { display: flex; gap: 10px; align-items: stretch; }
+  .goRow .primary { flex: 1; }
+  .iconBtn {
+    flex: 0 0 auto;
+    width: 52px;
+    background: transparent;
+    border: 1px solid var(--border-strong);
+    border-radius: 14px;
+    color: var(--muted);
+    font-size: 19px;
+    cursor: pointer;
+  }
+  .iconBtn.active { background: rgba(139, 124, 255, 0.18); color: var(--text); border-color: var(--accent); }
+  .iconBtn.recording { background: rgba(255, 143, 143, 0.18); border-color: var(--danger); color: var(--danger); animation: recPulse 1.2s ease-in-out infinite; }
+  @keyframes recPulse { 0%,100% { opacity: 1; } 50% { opacity: 0.55; } }
+
   @media (min-width: 700px) {
     .focusBtnRow, .timerBtnRow { flex-direction: row; justify-content: center; }
     button.primary { width: auto; }
+    .goRow .primary { width: auto; }
     #brainDumpInput { min-height: 200px; }
   }
 </style>
@@ -270,6 +403,45 @@
       <h1>FUCK ADHD</h1>
       <p class="tagline">one thing at a time — the rest can wait</p>
       <div id="examCountdown" data-open="settings"></div>
+      <div id="winsLine"></div>
+    </div>
+    <div id="todayBlock">
+      <div class="blockTitle">Today</div>
+      <div id="planEmptyWrap">
+        <button class="primary" id="planMyDayBtn">Plan my day</button>
+      </div>
+      <div id="planFormWrap" style="display:none;">
+        <div class="checkins" style="grid-template-columns: 1fr 1fr;">
+          <div>
+            <label for="planEnergy">Energy right now</label>
+            <select id="planEnergy">
+              <option value="very low">Very low</option>
+              <option value="low" selected>Low</option>
+              <option value="okay">Okay</option>
+              <option value="good">Good</option>
+              <option value="high">High</option>
+            </select>
+          </div>
+          <div>
+            <label for="planHours">Hours available</label>
+            <input id="planHours" type="number" min="1" max="16" value="4">
+          </div>
+        </div>
+        <button class="primary" id="planGenerateBtn">Make the plan</button>
+        <div id="planStatus" class="modeDesc" style="margin:10px 0 0;"></div>
+      </div>
+      <div id="planListWrap" style="display:none;">
+        <div id="planList"></div>
+        <div class="planRowSmall">
+          <input id="planAddInput" placeholder="Add something…">
+          <button class="ghost" id="planAddBtn">Add</button>
+        </div>
+        <div class="planRowSmall">
+          <button class="ghost" id="planToFocusBtn" style="flex:1;">Send remaining to Focus</button>
+          <button class="ghost" id="planRedoBtn">Replan</button>
+        </div>
+        <div id="planListStatus" class="modeDesc" style="margin:8px 0 0;"></div>
+      </div>
     </div>
     <nav class="menu">
       <button class="menuItem" data-open="ai:breakdown">Break it down</button>
@@ -282,6 +454,7 @@
       <button data-open="ai:ask">Ask</button><span class="dot">·</span>
       <button data-open="settings">Settings</button>
     </div>
+    <p id="dailyWisdom"></p>
   </div>
 
   <div class="view" id="view-ai">
@@ -323,11 +496,16 @@
       <label id="inputLabel" for="userInput">What's the task?</label>
       <textarea id="userInput" style="min-height:100px;" placeholder="Type here..."></textarea>
     </div>
-    <button class="primary" id="submitBtn">Go</button>
+    <div class="goRow">
+      <button class="primary" id="submitBtn">Go</button>
+      <button class="iconBtn" id="micBtn" aria-label="Speak instead of typing">🎙</button>
+      <button class="iconBtn" id="speakToggleBtn" aria-label="Speak replies aloud">🔊</button>
+    </div>
     <span id="status"></span>
     <div id="outputWrap">
       <div id="firstStepBox"></div>
       <div id="output"></div>
+      <button class="ghost" id="replayBtn" style="display:none; margin-top:12px;">🔊 Read it again</button>
     </div>
   </div>
 
@@ -488,6 +666,20 @@
 
 </div>
 
+<div id="burstOverlay" aria-hidden="true">
+  <div id="burstRing"></div>
+  <div id="burstText"></div>
+</div>
+
+<div id="pathOverlay">
+  <div id="pathCard">
+    <h2>The path</h2>
+    <div class="sub">The Ten Ox-Herding Pictures — the Zen map of taming a wandering mind. The ox is your attention.</div>
+    <div id="pathStages"></div>
+    <button class="ghost" id="pathCloseBtn" style="width:100%; margin-top:12px;">Close</button>
+  </div>
+</div>
+
 <script>
 const modeConfig = {
   breakdown: {
@@ -550,6 +742,314 @@ let state = Object.assign({
 delete state.examDate;
 delete state.deadlines;
 
+if (!state.wins || typeof state.wins.total !== "number") state.wins = { total: 0, byDay: {} };
+if (typeof state.voiceOut !== "boolean") state.voiceOut = false;
+(function pruneWins() {
+  const cutoff = Date.now() - 14 * 86400000;
+  for (const day of Object.keys(state.wins.byDay)) {
+    if (new Date(day).getTime() < cutoff) delete state.wins.byDay[day];
+  }
+})();
+
+const COMPLETION_LINES = [
+  "When walking, walk. When eating, eat. — Zen proverb",
+  "A journey of a thousand miles begins with a single step. — Laozi",
+  "The obstacle is the path. — Zen proverb",
+  "How you do anything is how you do everything. — Zen saying",
+  "Small deeds done are better than great deeds planned. — Chinese proverb",
+  "Fall seven times, stand up eight. — Japanese proverb",
+  "The wise adapt themselves like water to the shape of the vessel. — Chinese proverb",
+  "Move and the way will open. — Zen proverb",
+  "One moment of complete attention is one moment of freedom.",
+  "Done is a form of stillness.",
+  "You did the thing in front of you. That is the whole practice.",
+  "Chop wood, carry water. — Zen saying",
+  "The quieter the mind, the louder the progress.",
+  "Even the longest river reaches the sea by flowing, not by rushing.",
+  "Each step is the destination. — Zen saying",
+  "Nothing is left undone when the doing is simple. — after Laozi",
+  "Attention is the rarest and purest form of generosity. — Simone Weil",
+  "The mind that returns is stronger than the mind that never wandered.",
+  "First the ox resists. Then it walks with you.",
+  "What you finish, finishes something in you.",
+  "Water is soft, stone is hard — yet drop by drop the stone is carved.",
+  "This moment was used well.",
+  "The bamboo bends and does not break.",
+  "One task, wholly done, outweighs ten half-held.",
+  "Begin again as many times as needed — the path doesn't count restarts."
+];
+const DEEP_LINES = [
+  "Nature does not hurry, yet everything is accomplished. — Laozi, Tao Te Ching",
+  "You have power over your mind — not outside events. Realize this, and you will find strength. — Marcus Aurelius",
+  "The mind is everything. What you think you become. — attributed to the Buddha",
+  "Do your work, then step back. The only path to serenity. — Laozi, Tao Te Ching",
+  "It is not that we have a short time to live, but that we waste a lot of it. — Seneca",
+  "You are only entitled to the action, never to its fruits. Act for the action's sake. — Bhagavad Gita",
+  "Before enlightenment: chop wood, carry water. After enlightenment: chop wood, carry water. — Zen proverb",
+  "When you realize nothing is lacking, the whole world belongs to you. — Laozi",
+  "Confine yourself to the present. — Marcus Aurelius",
+  "The ox is never lost. Only the herder forgets where to look. — Ox-herding tradition"
+];
+const DAILY_WISDOM = [
+  "Nature does not hurry, yet everything is accomplished. — Laozi",
+  "You have power over your mind — not outside events. — Marcus Aurelius",
+  "The best time to plant a tree was twenty years ago. The second best time is now. — Chinese proverb",
+  "Do the difficult things while they are easy. — Laozi",
+  "A jug fills drop by drop. — attributed to the Buddha",
+  "We suffer more often in imagination than in reality. — Seneca",
+  "Set your heart upon your work, but never on its reward. — Bhagavad Gita",
+  "When walking, walk. When eating, eat. — Zen proverb",
+  "Muddy water, let stand, becomes clear. — Laozi",
+  "No man steps in the same river twice. — Heraclitus",
+  "The obstacle is the path. — Zen proverb",
+  "He who conquers himself is the mightiest warrior. — Confucius",
+  "Begin at once to live, and count each separate day as a separate life. — Seneca",
+  "Your mind is a garden; your thoughts are the seeds. — proverb",
+  "To the mind that is still, the whole universe surrenders. — Zhuangzi",
+  "It does not matter how slowly you go as long as you do not stop. — Confucius",
+  "The wound is the place where the light enters you. — Rumi",
+  "Man conquers the world by conquering himself. — Zeno of Citium",
+  "Sitting quietly, doing nothing, spring comes, and the grass grows by itself. — Bashō",
+  "Waste no more time arguing what a good man should be. Be one. — Marcus Aurelius",
+  "Tension is who you think you should be. Relaxation is who you are. — Chinese proverb",
+  "One who is patient glows with an inner radiance. — Dhammapada",
+  "If you are depressed you live in the past, if anxious the future, at peace — the present. — after Laozi",
+  "Better than a thousand hollow words is one word that brings peace. — Dhammapada",
+  "The gem cannot be polished without friction, nor man perfected without trials. — Chinese proverb",
+  "Knowing others is intelligence; knowing yourself is true wisdom. — Laozi",
+  "Luck is what happens when preparation meets opportunity. — Seneca",
+  "Wherever you go, go with all your heart. — Confucius",
+  "Silence is a source of great strength. — Laozi",
+  "Every morning we are born again. What we do today is what matters most. — Buddhist saying",
+  "Perform your duty, for action is superior to inaction. — Bhagavad Gita",
+  "First say to yourself what you would be; then do what you have to do. — Epictetus",
+  "The moon does not fight. It attacks no one. Yet no one can resist it. — Deng Ming-Dao",
+  "Only the hand that erases can write the true thing. — Meister Eckhart",
+  "A good traveler has no fixed plans and is not intent on arriving. — Laozi",
+  "Drop by drop is the water pot filled. — Dhammapada",
+  "You could leave life right now. Let that determine what you do and say. — Marcus Aurelius",
+  "Empty your cup so that it may be filled. — Zen saying",
+  "The softest things in the world overcome the hardest. — Laozi",
+  "Peace comes from within. Do not seek it without. — Buddhist saying"
+];
+const STILLNESS_LINES = [
+  "The quieter you become, the more you are able to hear. — Rumi",
+  "Breath is the bridge between body and mind. — Thich Nhat Hanh",
+  "Muddy water, let stand, becomes clear. — Laozi",
+  "You are the sky. Everything else is just the weather. — Pema Chödrön",
+  "Sitting quietly, the storm passes through and does not stay.",
+  "Stillness is what remains when you stop adding."
+];
+const OX_STAGES = [
+  { at: 0,   name: "Searching for the Ox",   meaning: "You know your attention wanders. Looking for it is the first act of the path." },
+  { at: 5,   name: "Seeing the Tracks",      meaning: "Patterns emerge — you're starting to notice when and where focus slips away." },
+  { at: 15,  name: "Glimpsing the Ox",       meaning: "Moments of real focus appear. Brief, but undeniably yours." },
+  { at: 30,  name: "Catching the Ox",        meaning: "You can summon focus deliberately now — it still fights the rope." },
+  { at: 50,  name: "Taming the Ox",          meaning: "Structure and practice are making focus less of a battle." },
+  { at: 80,  name: "Riding the Ox Home",     meaning: "Focus carries you now. The struggle is quieter than it was." },
+  { at: 120, name: "The Ox Forgotten",       meaning: "You work without thinking about working. The tools disappear into the doing." },
+  { at: 180, name: "Both Forgotten",         meaning: "No ox, no herder — just the task and you, indistinguishable." },
+  { at: 250, name: "Returning to the Source",meaning: "Effort looks effortless. What was practice is now nature." },
+  { at: 350, name: "In the World",           meaning: "You move through ordinary life carrying an extraordinary calm. The path continues." }
+];
+
+function todayKey() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+function currentStage() {
+  let idx = 0;
+  for (let i = 0; i < OX_STAGES.length; i++) if (state.wins.total >= OX_STAGES[i].at) idx = i;
+  return idx;
+}
+function renderWinsLine() {
+  const todayWins = state.wins.byDay[todayKey()] || 0;
+  const idx = currentStage();
+  $("winsLine").innerHTML = `<span class="star">✦</span> ${todayWins} today · Stage ${idx + 1}: ${OX_STAGES[idx].name}`;
+}
+let burstTimeout = null;
+function showBurst() {
+  const deep = Math.random() < 0.2;
+  const pool = deep ? DEEP_LINES : COMPLETION_LINES;
+  const line = pool[Math.floor(Math.random() * pool.length)];
+  const overlay = $("burstOverlay");
+  overlay.classList.remove("show", "deep");
+  void overlay.offsetWidth;
+  $("burstText").textContent = line;
+  overlay.classList.add("show");
+  if (deep) overlay.classList.add("deep");
+  clearTimeout(burstTimeout);
+  burstTimeout = setTimeout(() => overlay.classList.remove("show", "deep"), deep ? 3400 : 2300);
+}
+function registerWin(source) {
+  const key = todayKey();
+  state.wins.total++;
+  state.wins.byDay[key] = (state.wins.byDay[key] || 0) + 1;
+  saveState(state);
+  renderWinsLine();
+  showBurst();
+}
+$("winsLine").addEventListener("click", () => {
+  const el = $("pathStages");
+  el.innerHTML = "";
+  const cur = currentStage();
+  OX_STAGES.forEach((s, i) => {
+    const div = document.createElement("div");
+    div.className = "pathStage" + (i === cur ? " current" : i < cur ? " reached" : "");
+    div.innerHTML = `<div>${i + 1}. ${s.name}${i < cur ? " ✓" : ""}</div><div class="meaning">${s.meaning}</div>`;
+    el.appendChild(div);
+  });
+  $("pathOverlay").classList.add("show");
+});
+$("pathCloseBtn").addEventListener("click", () => $("pathOverlay").classList.remove("show"));
+$("pathOverlay").addEventListener("click", (e) => { if (e.target === $("pathOverlay")) $("pathOverlay").classList.remove("show"); });
+
+function renderDailyWisdom() {
+  const daysSinceEpoch = Math.floor(Date.now() / 86400000);
+  $("dailyWisdom").textContent = DAILY_WISDOM[daysSinceEpoch % DAILY_WISDOM.length];
+}
+
+let dayplanCache = null;
+
+async function dayplanApi(body) {
+  const res = await fetch("/api/dayplan", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(Object.assign({ pin: state.pin }, body))
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+  return data;
+}
+
+function renderTodayBlock() {
+  const hasPlan = dayplanCache && dayplanCache.date === todayKey() && dayplanCache.items.length;
+  $("planEmptyWrap").style.display = hasPlan ? "none" : "block";
+  $("planFormWrap").style.display = "none";
+  $("planListWrap").style.display = hasPlan ? "block" : "none";
+  if (!hasPlan) return;
+  const list = $("planList");
+  list.innerHTML = "";
+  dayplanCache.items.forEach(it => {
+    const div = document.createElement("div");
+    div.className = "planItem" + (it.done ? " done" : "");
+    div.innerHTML = `<div class="planCheck">✓</div><div class="planText">${escapeHtml(it.text)}</div><button class="planDel" data-id="${it.id}" aria-label="Remove">✕</button>`;
+    div.addEventListener("click", async (e) => {
+      if (e.target.classList.contains("planDel")) return;
+      const wasDone = it.done;
+      try {
+        const data = await dayplanApi({ action: "toggle", id: it.id });
+        dayplanCache = data.plan;
+        renderTodayBlock();
+        if (!wasDone) registerWin("plan");
+      } catch (err) {
+        $("planListStatus").textContent = `Error: ${err.message}`;
+      }
+    });
+    div.querySelector(".planDel").addEventListener("click", async () => {
+      try {
+        const items = dayplanCache.items.filter(x => x.id !== it.id);
+        const data = await dayplanApi({ action: "set", date: dayplanCache.date, energy: dayplanCache.energy, items });
+        dayplanCache = data.plan;
+        renderTodayBlock();
+      } catch (err) {
+        $("planListStatus").textContent = `Error: ${err.message}`;
+      }
+    });
+    list.appendChild(div);
+  });
+}
+
+async function loadDayplan() {
+  if (!state.pin) { renderTodayBlock(); return; }
+  try {
+    const data = await dayplanApi({ action: "get" });
+    dayplanCache = data.plan;
+  } catch (e) {
+    dayplanCache = null;
+  }
+  renderTodayBlock();
+}
+
+$("planMyDayBtn").addEventListener("click", () => {
+  $("planEmptyWrap").style.display = "none";
+  $("planFormWrap").style.display = "block";
+});
+$("planRedoBtn").addEventListener("click", () => {
+  $("planListWrap").style.display = "none";
+  $("planFormWrap").style.display = "block";
+});
+
+function extractJson(text) {
+  const cleaned = text.replace(/```json|```/g, "").trim();
+  const start = cleaned.indexOf("{");
+  const end = cleaned.lastIndexOf("}");
+  if (start === -1 || end === -1) throw new Error("no JSON found");
+  return JSON.parse(cleaned.slice(start, end + 1));
+}
+
+$("planGenerateBtn").addEventListener("click", async () => {
+  const status = $("planStatus");
+  const energy = $("planEnergy").value;
+  const hours = Math.max(1, parseInt($("planHours").value, 10) || 4);
+  const now = Date.now();
+  const dl = deadlinesCache
+    .filter(d => d.date > now)
+    .sort((a, b) => a.date - b.date)
+    .map(d => `- ${d.label}: in ${Math.ceil((d.date - now) / 86400000)} day(s)`)
+    .join("\n") || "- (no deadlines recorded)";
+  status.textContent = "planning…";
+  $("planGenerateBtn").disabled = true;
+  const sys = `You are a day planner for a university student with ADHD. Today is ${new Date().toDateString()}. Their upcoming deadlines:\n${dl}\n\nThey have ${hours} hour(s) available and their energy is "${energy}". Build today's plan: prioritize the NEAREST deadlines, make each item one concrete physical action of at most 15 words (e.g. "Do BAM problem set 8, questions 1-3" not "study BAM"), size the number of items to energy (very low = 2-3 tiny items, high = up to 6), include one short break or meal if hours > 3. Reply with STRICT JSON only, no markdown, exactly this shape: {"items":["...","..."]}`;
+  try {
+    let parsed;
+    for (let attempt = 0; attempt < 2; attempt++) {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pin: state.pin, system: sys + (attempt ? "\nREPLY ONLY WITH THE JSON OBJECT." : ""), message: "Plan my day." })
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+      try { parsed = extractJson(data.text || ""); break; } catch (e) { if (attempt) throw new Error("The AI didn't return a usable plan — try again."); }
+    }
+    const items = (parsed.items || []).slice(0, 6).map(t => ({ text: String(t), done: false }));
+    if (!items.length) throw new Error("Empty plan returned — try again.");
+    const saved = await dayplanApi({ action: "set", date: todayKey(), energy, items });
+    dayplanCache = saved.plan;
+    status.textContent = "";
+    renderTodayBlock();
+  } catch (e) {
+    status.textContent = `Error: ${e.message}`;
+  } finally {
+    $("planGenerateBtn").disabled = false;
+  }
+});
+
+$("planAddBtn").addEventListener("click", async () => {
+  const text = $("planAddInput").value.trim();
+  if (!text || !dayplanCache) return;
+  try {
+    const items = dayplanCache.items.concat([{ text, done: false }]);
+    const data = await dayplanApi({ action: "set", date: dayplanCache.date, energy: dayplanCache.energy, items });
+    dayplanCache = data.plan;
+    $("planAddInput").value = "";
+    renderTodayBlock();
+  } catch (e) {
+    $("planListStatus").textContent = `Error: ${e.message}`;
+  }
+});
+
+$("planToFocusBtn").addEventListener("click", () => {
+  if (!dayplanCache) return;
+  const remaining = dayplanCache.items.filter(it => !it.done).map(it => it.text);
+  if (!remaining.length) { $("planListStatus").textContent = "Everything's done. Nothing left to focus on — go rest."; return; }
+  state.focusQueue = remaining;
+  state.focusRunning = true;
+  saveState(state);
+  showView("focus");
+});
+
 let deadlinesCache = [];
 
 async function deadlinesApi(body) {
@@ -567,7 +1067,8 @@ function showView(name) {
   document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
   $("view-" + name).classList.add("active");
   window.scrollTo(0, 0);
-  if (name === "home") loadAndRenderDeadlines();
+  if ("speechSynthesis" in window) speechSynthesis.cancel();
+  if (name === "home") { loadAndRenderDeadlines(); loadDayplan(); renderWinsLine(); renderDailyWisdom(); }
   if (name === "focus") renderFocusPanel();
   if (name === "timer") renderTimerPanel();
   if (name === "braindump") renderBraindumpPanel();
@@ -838,6 +1339,10 @@ $("submitBtn").addEventListener("click", async () => {
     const full = data.text || "";
     renderOutput(full, cfg);
     statusEl.textContent = "";
+    lastReply = full;
+    $("replayBtn").style.display = full ? "block" : "none";
+    if (voiceRequested || state.voiceOut) speak(full);
+    voiceRequested = false;
 
     state.history.push({
       id: String(Date.now()) + Math.random().toString(36).slice(2,7),
@@ -869,6 +1374,93 @@ function renderOutput(text, cfg) {
   $("firstStepBox").innerHTML = "";
   $("output").textContent = text;
 }
+
+let lastReply = "";
+let voiceRequested = false;
+
+function speak(text) {
+  if (!("speechSynthesis" in window) || !text) return;
+  speechSynthesis.cancel();
+  const clean = text.replace(/FIRST:/gi, "First: ").replace(/[*#_`]/g, "");
+  const u = new SpeechSynthesisUtterance(clean.slice(0, 1200));
+  u.rate = 1.0;
+  speechSynthesis.speak(u);
+}
+$("replayBtn").addEventListener("click", () => speak(lastReply));
+
+function renderSpeakToggle() {
+  $("speakToggleBtn").classList.toggle("active", state.voiceOut);
+}
+$("speakToggleBtn").addEventListener("click", () => {
+  state.voiceOut = !state.voiceOut;
+  saveState(state);
+  renderSpeakToggle();
+  if (!state.voiceOut && "speechSynthesis" in window) speechSynthesis.cancel();
+});
+renderSpeakToggle();
+
+let mediaRecorder = null;
+let recordChunks = [];
+
+$("micBtn").addEventListener("click", async () => {
+  const statusEl = $("status");
+  if (mediaRecorder && mediaRecorder.state === "recording") {
+    mediaRecorder.stop();
+    return;
+  }
+  try {
+    if (!navigator.mediaDevices || !window.MediaRecorder) {
+      throw new Error("This browser can't record audio.");
+    }
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    recordChunks = [];
+    const mime = MediaRecorder.isTypeSupported("audio/webm;codecs=opus") ? "audio/webm;codecs=opus"
+      : MediaRecorder.isTypeSupported("audio/ogg;codecs=opus") ? "audio/ogg;codecs=opus" : "";
+    mediaRecorder = mime ? new MediaRecorder(stream, { mimeType: mime }) : new MediaRecorder(stream);
+    mediaRecorder.ondataavailable = (e) => { if (e.data.size) recordChunks.push(e.data); };
+    mediaRecorder.onstop = async () => {
+      stream.getTracks().forEach(t => t.stop());
+      $("micBtn").classList.remove("recording");
+      const blob = new Blob(recordChunks, { type: mediaRecorder.mimeType || "audio/webm" });
+      if (blob.size < 1500) { statusEl.textContent = "Too short — hold the thought and try again."; return; }
+      if (blob.size > 3 * 1024 * 1024) { statusEl.className = "err"; statusEl.textContent = "Too long — keep it under ~45 seconds."; return; }
+      statusEl.className = "";
+      statusEl.textContent = "transcribing…";
+      try {
+        const buf = await blob.arrayBuffer();
+        let binary = "";
+        const bytes = new Uint8Array(buf);
+        for (let i = 0; i < bytes.length; i += 8192) {
+          binary += String.fromCharCode.apply(null, bytes.subarray(i, i + 8192));
+        }
+        const res = await fetch("/api/transcribe", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ pin: state.pin, audio: btoa(binary), mime: blob.type })
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+        const text = (data.text || "").trim();
+        if (!text) { statusEl.textContent = "Didn't catch that — try again."; return; }
+        $("userInput").value = text;
+        statusEl.textContent = "";
+        voiceRequested = true;
+        $("submitBtn").click();
+      } catch (e) {
+        statusEl.className = "err";
+        statusEl.textContent = e.message;
+      }
+    };
+    mediaRecorder.start();
+    $("micBtn").classList.add("recording");
+    statusEl.className = "";
+    statusEl.textContent = "listening… tap 🎙 again when done";
+    setTimeout(() => { if (mediaRecorder && mediaRecorder.state === "recording") mediaRecorder.stop(); }, 45000);
+  } catch (e) {
+    statusEl.className = "err";
+    statusEl.textContent = /denied|permission/i.test(e.message) ? "Microphone permission denied — allow it in your browser settings." : e.message;
+  }
+});
 
 $("testConnBtn").addEventListener("click", async () => {
   const out = $("testConnResult");
@@ -920,6 +1512,7 @@ $("focusDoneBtn").addEventListener("click", () => {
   state.focusQueue.shift();
   saveState(state);
   renderFocusPanel();
+  registerWin("focus");
 });
 $("focusEditBtn").addEventListener("click", () => {
   state.focusRunning = false;
@@ -991,6 +1584,7 @@ function tickTimer() {
       timerPhase = "break";
       timerTotal = state.timerBreak * 60000;
       timerEnd = Date.now() + timerTotal;
+      registerWin("timer");
     } else {
       clearInterval(timerHandle);
       timerPhase = "idle";
@@ -1036,7 +1630,14 @@ function runBreathCycle() {
 }
 function stopBreath() {
   clearInterval(breathHandle);
-  $("breathBlock").style.display = "none";
+  if (breathCycle > 1) {
+    const line = STILLNESS_LINES[Math.floor(Math.random() * STILLNESS_LINES.length)];
+    $("breathLabel").textContent = "";
+    $("breathCount").textContent = line;
+    setTimeout(() => { $("breathBlock").style.display = "none"; }, 3500);
+  } else {
+    $("breathBlock").style.display = "none";
+  }
 }
 
 async function remindersApi(body) {
@@ -1195,6 +1796,9 @@ if ("serviceWorker" in navigator) {
 }
 
 loadAndRenderDeadlines();
+loadDayplan();
+renderWinsLine();
+renderDailyWisdom();
 </script>
 </body>
 </html>
