@@ -13,3 +13,4 @@ export function pinOk(req) {
 
 export const REMINDERS_KEY = "reminders";
 export const SUBS_KEY = "push:subs";
+export const DEADLINES_KEY = "deadlines";

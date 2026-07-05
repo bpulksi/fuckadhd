@@ -545,32 +545,56 @@ let state = Object.assign({
   timerWork: 25,
   timerBreak: 5,
   brainDump: "",
-  pin: "",
-  deadlines: []
+  pin: ""
 }, loadState());
-if (state.examDate) {
-  state.deadlines.push({ id: String(Date.now()), label: "Deadline", date: state.examDate });
-  delete state.examDate;
-  saveState(state);
+delete state.examDate;
+delete state.deadlines;
+
+let deadlinesCache = [];
+
+async function deadlinesApi(body) {
+  const res = await fetch("/api/deadlines", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(Object.assign({ pin: state.pin }, body))
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+  return data;
 }
 
 function showView(name) {
   document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
   $("view-" + name).classList.add("active");
   window.scrollTo(0, 0);
-  if (name === "home") renderExamCountdown();
+  if (name === "home") loadAndRenderDeadlines();
   if (name === "focus") renderFocusPanel();
   if (name === "timer") renderTimerPanel();
   if (name === "braindump") renderBraindumpPanel();
   if (name === "remind") renderRemindPanel();
-  if (name === "settings") { renderHistory(); renderDeadlineList(); }
+  if (name === "settings") { renderHistory(); loadAndRenderDeadlines(); }
+}
+
+async function loadAndRenderDeadlines() {
+  try {
+    const data = await deadlinesApi({ action: "list" });
+    deadlinesCache = data.deadlines;
+  } catch (e) {
+    const el = $("examCountdown");
+    el.className = "unset";
+    el.textContent = state.pin ? `Couldn't load deadlines: ${e.message}` : "Set your PIN in Settings to sync deadlines";
+    if ($("view-settings").classList.contains("active")) renderDeadlineList();
+    return;
+  }
+  renderExamCountdown();
+  if ($("view-settings").classList.contains("active")) renderDeadlineList();
 }
 
 function upcomingDeadlines() {
   const now = Date.now();
-  return state.deadlines
-    .filter(d => new Date(d.date).getTime() > now)
-    .sort((a, b) => new Date(a.date) - new Date(b.date));
+  return deadlinesCache
+    .filter(d => d.date > now)
+    .sort((a, b) => a.date - b.date);
 }
 
 function renderExamCountdown() {
@@ -578,11 +602,11 @@ function renderExamCountdown() {
   const upcoming = upcomingDeadlines();
   if (!upcoming.length) {
     el.className = "unset";
-    el.textContent = state.deadlines.length ? "All deadlines have passed — add a new one →" : "Add your deadlines in Settings →";
+    el.textContent = deadlinesCache.length ? "All deadlines have passed — add a new one →" : "Add your deadlines in Settings →";
     return;
   }
   const next = upcoming[0];
-  const ms = new Date(next.date).getTime() - Date.now();
+  const ms = next.date - Date.now();
   const days = Math.floor(ms / 86400000);
   const hours = Math.floor((ms % 86400000) / 3600000);
   el.className = "";
@@ -598,7 +622,7 @@ function renderExamCountdown() {
 function renderDeadlineList() {
   const el = $("deadlineList");
   el.innerHTML = "";
-  const sorted = [...state.deadlines].sort((a, b) => new Date(a.date) - new Date(b.date));
+  const sorted = [...deadlinesCache].sort((a, b) => a.date - b.date);
   if (!sorted.length) {
     el.innerHTML = '<div class="modeDesc" style="margin:0;">No deadlines added yet.</div>';
     return;
@@ -608,54 +632,68 @@ function renderDeadlineList() {
     const div = document.createElement("div");
     div.className = "histItem";
     const when = new Date(d.date);
-    const passed = when.getTime() <= now;
+    const passed = d.date <= now;
     div.innerHTML = `
       <div style="font-size:14.5px; color:var(--text); font-weight:600;">${escapeHtml(d.label)}</div>
       <div class="input" style="${passed ? "color:var(--muted);" : ""}">${when.toLocaleString([], { weekday: "short", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}${passed ? " · passed" : ""}</div>
       <div class="fbRow"><button class="ghost deadline-del" data-id="${d.id}">Delete</button></div>`;
     el.appendChild(div);
   });
-  el.querySelectorAll(".deadline-del").forEach(b => b.addEventListener("click", () => {
-    state.deadlines = state.deadlines.filter(d => d.id !== b.dataset.id);
-    saveState(state);
-    renderDeadlineList();
-    renderExamCountdown();
+  el.querySelectorAll(".deadline-del").forEach(b => b.addEventListener("click", async () => {
+    try {
+      const data = await deadlinesApi({ action: "delete", id: b.dataset.id });
+      deadlinesCache = data.deadlines;
+      renderDeadlineList();
+      renderExamCountdown();
+    } catch (e) {
+      $("deadlineList").insertAdjacentHTML("afterbegin", `<div class="modeDesc" style="color:var(--danger);">Error: ${escapeHtml(e.message)}</div>`);
+    }
   }));
 }
 
-$("deadlineAddBtn").addEventListener("click", () => {
+$("deadlineAddBtn").addEventListener("click", async () => {
   const label = $("deadlineLabel").value.trim();
   const dateVal = $("deadlineDate").value;
   if (!label) { $("deadlineLabel").focus(); return; }
   if (!dateVal) { $("deadlineDate").focus(); return; }
-  state.deadlines.push({ id: String(Date.now()) + Math.random().toString(36).slice(2, 7), label, date: dateVal });
-  saveState(state);
-  $("deadlineLabel").value = "";
-  $("deadlineDate").value = "";
-  renderDeadlineList();
-  renderExamCountdown();
+  try {
+    const data = await deadlinesApi({ action: "add", label, date: new Date(dateVal).getTime() });
+    deadlinesCache = data.deadlines;
+    $("deadlineLabel").value = "";
+    $("deadlineDate").value = "";
+    renderDeadlineList();
+    renderExamCountdown();
+  } catch (e) {
+    $("deadlineList").insertAdjacentHTML("afterbegin", `<div class="modeDesc" style="color:var(--danger);">Error: ${escapeHtml(e.message)}</div>`);
+  }
 });
 
-$("ovguQuickAddBtn").addEventListener("click", () => {
+$("ovguQuickAddBtn").addEventListener("click", async () => {
   const OVGU_EXAMS = [
-    { label: "BAM mock exam window closes", date: "2026-07-09T09:00" },
-    { label: "AIbDS II Q&A questions due", date: "2026-07-09T12:00" },
-    { label: "BAM exam", date: "2026-07-16T11:00" },
-    { label: "AIbDS II exam", date: "2026-07-21T11:00" },
-    { label: "Company Valuation exam", date: "2026-07-23T11:00" },
-    { label: "Financial Engineering exam", date: "2026-07-25T11:00" }
+    { label: "BAM mock exam window closes", date: new Date("2026-07-09T09:00").getTime() },
+    { label: "AIbDS II Q&A questions due", date: new Date("2026-07-09T12:00").getTime() },
+    { label: "BAM exam", date: new Date("2026-07-16T11:00").getTime() },
+    { label: "AIbDS II exam", date: new Date("2026-07-21T11:00").getTime() },
+    { label: "Company Valuation exam", date: new Date("2026-07-23T11:00").getTime() },
+    { label: "Financial Engineering exam", date: new Date("2026-07-25T11:00").getTime() }
   ];
-  const existingLabels = new Set(state.deadlines.map(d => d.label));
-  OVGU_EXAMS.forEach(e => {
-    if (existingLabels.has(e.label)) return;
-    state.deadlines.push({ id: String(Date.now()) + Math.random().toString(36).slice(2, 7), label: e.label, date: e.date });
-  });
-  saveState(state);
-  renderDeadlineList();
-  renderExamCountdown();
-  $("ovguQuickAddBtn").textContent = "Added ✓ (double-check times on elearning.ovgu.de)";
+  $("ovguQuickAddBtn").disabled = true;
+  try {
+    let data;
+    for (const e of OVGU_EXAMS) {
+      data = await deadlinesApi({ action: "add", label: e.label, date: e.date });
+    }
+    deadlinesCache = data.deadlines;
+    renderDeadlineList();
+    renderExamCountdown();
+    $("ovguQuickAddBtn").textContent = "Added ✓ (double-check times on elearning.ovgu.de)";
+  } catch (e) {
+    $("ovguQuickAddBtn").textContent = `Error: ${e.message}`;
+    $("ovguQuickAddBtn").disabled = false;
+  }
 });
 setInterval(() => { if ($("view-home").classList.contains("active")) renderExamCountdown(); }, 60000);
+setInterval(() => { if ($("view-home").classList.contains("active")) loadAndRenderDeadlines(); }, 5 * 60000);
 
 function openAiMode(mode) {
   currentMode = mode;
@@ -1156,7 +1194,7 @@ if ("serviceWorker" in navigator) {
   });
 }
 
-renderExamCountdown();
+loadAndRenderDeadlines();
 </script>
 </body>
 </html>
