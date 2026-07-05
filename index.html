@@ -452,8 +452,19 @@
       <span class="toolTitle">Settings</span>
     </div>
     <div class="settingsBlock">
-      <label for="examDateInput">Exam / deadline countdown (shown on home)</label>
-      <input id="examDateInput" type="datetime-local">
+      <label>Deadlines (soonest one shows on home)</label>
+      <div class="checkins" style="grid-template-columns: 1fr 1fr; margin: 8px 0 10px;">
+        <div>
+          <label for="deadlineLabel">What</label>
+          <input id="deadlineLabel" placeholder="e.g. Analysis 2 exam">
+        </div>
+        <div>
+          <label for="deadlineDate">When</label>
+          <input id="deadlineDate" type="datetime-local">
+        </div>
+      </div>
+      <button class="ghost" id="deadlineAddBtn" style="width:100%;">Add deadline</button>
+      <div id="deadlineList" style="margin-top:12px;"></div>
     </div>
     <div class="settingsBlock">
       <label for="aboutMe">About me (always remembered)</label>
@@ -534,8 +545,13 @@ let state = Object.assign({
   timerBreak: 5,
   brainDump: "",
   pin: "",
-  examDate: ""
+  deadlines: []
 }, loadState());
+if (state.examDate) {
+  state.deadlines.push({ id: String(Date.now()), label: "Deadline", date: state.examDate });
+  delete state.examDate;
+  saveState(state);
+}
 
 function showView(name) {
   document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
@@ -546,36 +562,76 @@ function showView(name) {
   if (name === "timer") renderTimerPanel();
   if (name === "braindump") renderBraindumpPanel();
   if (name === "remind") renderRemindPanel();
-  if (name === "settings") renderHistory();
+  if (name === "settings") { renderHistory(); renderDeadlineList(); }
+}
+
+function upcomingDeadlines() {
+  const now = Date.now();
+  return state.deadlines
+    .filter(d => new Date(d.date).getTime() > now)
+    .sort((a, b) => new Date(a.date) - new Date(b.date));
 }
 
 function renderExamCountdown() {
   const el = $("examCountdown");
-  if (!state.examDate) {
+  const upcoming = upcomingDeadlines();
+  if (!upcoming.length) {
     el.className = "unset";
-    el.textContent = "Set an exam or deadline countdown →";
+    el.textContent = state.deadlines.length ? "All deadlines have passed — add a new one →" : "Add your deadlines in Settings →";
     return;
   }
-  const target = new Date(state.examDate).getTime();
-  const ms = target - Date.now();
-  el.className = "";
-  if (ms <= 0) {
-    el.textContent = "Deadline passed — update it in Settings";
-    return;
-  }
+  const next = upcoming[0];
+  const ms = new Date(next.date).getTime() - Date.now();
   const days = Math.floor(ms / 86400000);
   const hours = Math.floor((ms % 86400000) / 3600000);
+  el.className = "";
+  const more = upcoming.length > 1 ? ` (+${upcoming.length - 1} more)` : "";
   if (days > 0) {
-    el.innerHTML = `<span class="days">${days}</span> day${days === 1 ? "" : "s"}${hours ? ` ${hours}h` : ""} until your deadline`;
+    el.innerHTML = `<span class="days">${days}</span> day${days === 1 ? "" : "s"}${hours ? ` ${hours}h` : ""} until ${escapeHtml(next.label)}${more}`;
   } else {
     const mins = Math.floor((ms % 3600000) / 60000);
-    el.innerHTML = `<span class="days">${hours}h ${mins}m</span> until your deadline`;
+    el.innerHTML = `<span class="days">${hours}h ${mins}m</span> until ${escapeHtml(next.label)}${more}`;
   }
 }
-$("examDateInput").value = state.examDate;
-$("examDateInput").addEventListener("change", () => {
-  state.examDate = $("examDateInput").value;
+
+function renderDeadlineList() {
+  const el = $("deadlineList");
+  el.innerHTML = "";
+  const sorted = [...state.deadlines].sort((a, b) => new Date(a.date) - new Date(b.date));
+  if (!sorted.length) {
+    el.innerHTML = '<div class="modeDesc" style="margin:0;">No deadlines added yet.</div>';
+    return;
+  }
+  const now = Date.now();
+  sorted.forEach(d => {
+    const div = document.createElement("div");
+    div.className = "histItem";
+    const when = new Date(d.date);
+    const passed = when.getTime() <= now;
+    div.innerHTML = `
+      <div style="font-size:14.5px; color:var(--text); font-weight:600;">${escapeHtml(d.label)}</div>
+      <div class="input" style="${passed ? "color:var(--muted);" : ""}">${when.toLocaleString([], { weekday: "short", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}${passed ? " · passed" : ""}</div>
+      <div class="fbRow"><button class="ghost deadline-del" data-id="${d.id}">Delete</button></div>`;
+    el.appendChild(div);
+  });
+  el.querySelectorAll(".deadline-del").forEach(b => b.addEventListener("click", () => {
+    state.deadlines = state.deadlines.filter(d => d.id !== b.dataset.id);
+    saveState(state);
+    renderDeadlineList();
+    renderExamCountdown();
+  }));
+}
+
+$("deadlineAddBtn").addEventListener("click", () => {
+  const label = $("deadlineLabel").value.trim();
+  const dateVal = $("deadlineDate").value;
+  if (!label) { $("deadlineLabel").focus(); return; }
+  if (!dateVal) { $("deadlineDate").focus(); return; }
+  state.deadlines.push({ id: String(Date.now()) + Math.random().toString(36).slice(2, 7), label, date: dateVal });
   saveState(state);
+  $("deadlineLabel").value = "";
+  $("deadlineDate").value = "";
+  renderDeadlineList();
   renderExamCountdown();
 });
 setInterval(() => { if ($("view-home").classList.contains("active")) renderExamCountdown(); }, 60000);
