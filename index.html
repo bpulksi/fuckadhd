@@ -464,7 +464,7 @@
         </div>
       </div>
       <button class="ghost" id="deadlineAddBtn" style="width:100%;">Add deadline</button>
-      <button class="ghost" id="ovguQuickAddBtn" style="width:100%; margin-top:8px;">Add my OVGU exams (BAM, AIbDS II, CV, FE)</button>
+      <button class="ghost" id="ovguQuickAddBtn" style="width:100%; margin-top:8px;">Add my OVGU exams + deadlines (6)</button>
       <div id="deadlineList" style="margin-top:12px;"></div>
     </div>
     <div class="settingsBlock">
@@ -638,6 +638,8 @@ $("deadlineAddBtn").addEventListener("click", () => {
 
 $("ovguQuickAddBtn").addEventListener("click", () => {
   const OVGU_EXAMS = [
+    { label: "BAM mock exam window closes", date: "2026-07-09T09:00" },
+    { label: "AIbDS II Q&A questions due", date: "2026-07-09T12:00" },
     { label: "BAM exam", date: "2026-07-16T11:00" },
     { label: "AIbDS II exam", date: "2026-07-21T11:00" },
     { label: "Company Valuation exam", date: "2026-07-23T11:00" },
