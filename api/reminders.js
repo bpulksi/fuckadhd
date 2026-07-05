@@ -20,17 +20,21 @@ export default async function handler(req, res) {
   }
 
   if (req.method === "POST" && req.body?.action === "add") {
-    const { text, due, repeat } = req.body;
+    const { text, due, repeat, tag } = req.body;
     if (!text || typeof text !== "string" || !Number.isFinite(due)) {
       res.status(400).json({ error: "Need text and a valid due time" });
       return;
+    }
+    if (tag) {
+      reminders = reminders.filter(r => r.tag !== tag);
     }
     const reminder = {
       id: crypto.randomUUID(),
       text: text.slice(0, 300),
       due,
       repeat: repeat === "daily" ? "daily" : "none",
-      sent: false
+      sent: false,
+      tag: typeof tag === "string" ? tag.slice(0, 50) : undefined
     };
     reminders.push(reminder);
     await redis.set(REMINDERS_KEY, reminders);

@@ -69,6 +69,14 @@
   }
   h1 { font-size: 24px; margin: 0; letter-spacing: 4px; font-weight: 600; }
   .tagline { color: var(--muted); font-size: 13.5px; margin: 8px 0 0; }
+  #examCountdown {
+    margin-top: 18px;
+    font-size: 13.5px;
+    color: var(--accent2);
+    cursor: pointer;
+  }
+  #examCountdown.unset { color: var(--muted); }
+  #examCountdown .days { font-weight: 600; font-size: 15px; }
   .menu { margin-top: 3vh; }
   .menuItem {
     display: block;
@@ -261,6 +269,7 @@
       <div class="orbMini" aria-hidden="true"></div>
       <h1>FUCK ADHD</h1>
       <p class="tagline">one thing at a time — the rest can wait</p>
+      <div id="examCountdown" data-open="settings"></div>
     </div>
     <nav class="menu">
       <button class="menuItem" data-open="ai:breakdown">Break it down</button>
@@ -270,9 +279,7 @@
       <button class="menuItem" data-open="braindump">Brain dump</button>
     </nav>
     <div class="subMenu">
-      <button data-open="ai:tone">Tone check</button><span class="dot">·</span>
-      <button data-open="ai:reassure">Reassurance</button><span class="dot">·</span>
-      <button data-open="ai:decide">Decide</button><span class="dot">·</span>
+      <button data-open="ai:ask">Ask</button><span class="dot">·</span>
       <button data-open="settings">Settings</button>
     </div>
   </div>
@@ -383,9 +390,24 @@
       <button class="ghost" id="enableNotifsBtn" style="width:100%;">Enable notifications on this device</button>
       <div id="notifStatus" class="modeDesc" style="margin:10px 0 0; word-break:break-word;"></div>
     </div>
+    <div class="settingsBlock" style="margin-top:20px;">
+      <div class="modeDesc" style="margin-bottom:10px;">Daily nudge — hits your phone at the same time every day, whether or not you've opened this app. This is the one setting worth filling in.</div>
+      <div class="checkins" style="grid-template-columns: 1fr 1fr; margin: 0 0 14px;">
+        <div>
+          <label for="nudgeTime">Time</label>
+          <input id="nudgeTime" type="time" value="18:00">
+        </div>
+        <div>
+          <label for="nudgeText">Say what</label>
+          <input id="nudgeText" placeholder="Start studying" value="Start studying">
+        </div>
+      </div>
+      <button class="primary" id="nudgeSetBtn" style="width:100%;">Set daily nudge</button>
+      <div id="nudgeStatus" class="modeDesc" style="margin:10px 0 0; word-break:break-word;"></div>
+    </div>
     <div style="margin-top:20px;">
       <div class="field">
-        <label for="remindText">What must you not forget?</label>
+        <label for="remindText">One-off reminder</label>
         <input id="remindText" placeholder="e.g. take meds, submit the form, call the doctor">
       </div>
       <div class="checkins" style="grid-template-columns: 1fr 1fr; margin: 0 0 14px;">
@@ -430,6 +452,10 @@
       <span class="toolTitle">Settings</span>
     </div>
     <div class="settingsBlock">
+      <label for="examDateInput">Exam / deadline countdown (shown on home)</label>
+      <input id="examDateInput" type="datetime-local">
+    </div>
+    <div class="settingsBlock">
       <label for="aboutMe">About me (always remembered)</label>
       <textarea id="aboutMe" placeholder="e.g. I stall out after long breaks. Mornings are hard. I overcommit and then panic near deadlines."></textarea>
     </div>
@@ -456,33 +482,22 @@ const modeConfig = {
     title: "Break it down",
     label: "What's the task?",
     placeholder: "e.g. clean the kitchen, start the report, reply to that email I've been avoiding",
-    desc: "Type the thing you're stuck on. It gets broken into small, concrete steps.",
+    desc: "Type the thing you're stuck on. You get one concrete trigger to act on, not a to-do list.",
     showCheckin: true,
-    systemExtra: `Break the user's task into small, concrete, sequential steps. Size the steps to their stated energy and mood: low energy or overwhelmed mood means smaller, more granular steps. Start your response with a single line "FIRST: <the one tiny obvious next action>", then a blank line, then a numbered list of the remaining steps. No commentary, no encouragement filler, no summary at the end.`
+    systemExtra: `The user is stuck starting a task. Research on ADHD task initiation (Gawrilow & Gollwitzer) shows "implementation intentions" — concrete if-then trigger plans — measurably outperform generic to-do lists at getting action started. Your job is to produce ONE of these, not a checklist.
+
+Start your response with a single line in exactly this form:
+"FIRST: If <a concrete, checkable trigger — a specific time, location, or thing that just happened>, then I will <one tiny physical action taking under 2 minutes, phrased as a literal physical movement, e.g. "open the document and type one sentence" not "start the report">."
+
+Then a blank line, then at most 2-3 further if-then pairs for the steps after that (same "If X, then I will Y" format, still small and concrete) — never a generic numbered list of vague steps. Size the trigger and action to their stated energy and mood: low energy or overwhelmed mood means a smaller action and a more immediate/easy-to-satisfy trigger. No commentary, no encouragement filler, no summary at the end.`
   },
-  tone: {
-    title: "Tone check",
-    label: "Paste the message you wrote",
-    placeholder: "Paste text you're about to send...",
-    desc: "Paste something you wrote before you send it. You'll get an honest read on how it comes across.",
+  ask: {
+    title: "Ask",
+    label: "What's on your mind?",
+    placeholder: "Paste a message, describe a decision, or tell me what happened...",
+    desc: "Paste something before sending it, describe a decision, or tell it what happened. One direct, honest response.",
     showCheckin: false,
-    systemExtra: `The user will paste a message they are about to send. Tell them honestly and briefly how it reads (tone, clarity, risk of being misread), in 2-4 sentences. Then, only if it would genuinely help, offer one rewritten version. Do not be sycophantic. Do not pad the response.`
-  },
-  reassure: {
-    title: "Reassurance",
-    label: "What happened?",
-    placeholder: "e.g. I didn't get to the thing I promised myself I'd do today",
-    desc: "Tell it what you did or didn't do. Honest, non-judgmental encouragement back — not a lecture.",
-    showCheckin: false,
-    systemExtra: `The user is telling you what they did or didn't accomplish. Respond with honest, warm, non-judgmental encouragement in 2-5 sentences. Do not minimize the difficulty and do not lecture or moralize. Do not enable avoidance either -- if relevant, gently name one small next step, but only if it fits naturally.`
-  },
-  decide: {
-    title: "Should I do this?",
-    label: "What's the decision?",
-    placeholder: "e.g. should I skip the gym today and just rest?",
-    desc: "Describe a decision you're weighing. You get a straight, honest read.",
-    showCheckin: false,
-    systemExtra: `The user is describing a decision they are about to make. Give a direct, honest opinion on whether it's a reasonable call in 2-4 sentences, plus at most one thing worth considering if it matters. Do not hedge excessively or give a generic pros/cons list.`
+    systemExtra: `The user will send you one of: (a) a message they're about to send — tell them honestly and briefly how it reads (tone, clarity, risk of being misread) in 2-4 sentences, offer one rewrite only if it would genuinely help; (b) something they did or didn't accomplish — respond with honest, warm, non-judgmental encouragement in 2-5 sentences, don't minimize the difficulty, don't lecture, don't enable avoidance either; (c) a decision they're weighing — give a direct, honest opinion on whether it's reasonable in 2-4 sentences plus at most one real consideration. Infer which of these fits from what they send and respond accordingly. Do not be sycophantic. Do not pad the response. Do not ask which mode they meant.`
   }
 };
 
@@ -518,19 +533,52 @@ let state = Object.assign({
   timerWork: 25,
   timerBreak: 5,
   brainDump: "",
-  pin: ""
+  pin: "",
+  examDate: ""
 }, loadState());
 
 function showView(name) {
   document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
   $("view-" + name).classList.add("active");
   window.scrollTo(0, 0);
+  if (name === "home") renderExamCountdown();
   if (name === "focus") renderFocusPanel();
   if (name === "timer") renderTimerPanel();
   if (name === "braindump") renderBraindumpPanel();
   if (name === "remind") renderRemindPanel();
   if (name === "settings") renderHistory();
 }
+
+function renderExamCountdown() {
+  const el = $("examCountdown");
+  if (!state.examDate) {
+    el.className = "unset";
+    el.textContent = "Set an exam or deadline countdown →";
+    return;
+  }
+  const target = new Date(state.examDate).getTime();
+  const ms = target - Date.now();
+  el.className = "";
+  if (ms <= 0) {
+    el.textContent = "Deadline passed — update it in Settings";
+    return;
+  }
+  const days = Math.floor(ms / 86400000);
+  const hours = Math.floor((ms % 86400000) / 3600000);
+  if (days > 0) {
+    el.innerHTML = `<span class="days">${days}</span> day${days === 1 ? "" : "s"}${hours ? ` ${hours}h` : ""} until your deadline`;
+  } else {
+    const mins = Math.floor((ms % 3600000) / 60000);
+    el.innerHTML = `<span class="days">${hours}h ${mins}m</span> until your deadline`;
+  }
+}
+$("examDateInput").value = state.examDate;
+$("examDateInput").addEventListener("change", () => {
+  state.examDate = $("examDateInput").value;
+  saveState(state);
+  renderExamCountdown();
+});
+setInterval(() => { if ($("view-home").classList.contains("active")) renderExamCountdown(); }, 60000);
 
 function openAiMode(mode) {
   currentMode = mode;
@@ -890,7 +938,7 @@ async function remindersApi(body) {
 function renderRemindList(reminders) {
   const el = $("remindList");
   el.innerHTML = "";
-  const upcoming = reminders.filter(r => !r.sent).sort((a, b) => a.due - b.due);
+  const upcoming = reminders.filter(r => !r.sent && r.tag !== "daily-nudge").sort((a, b) => a.due - b.due);
   if (!upcoming.length) {
     el.innerHTML = '<div class="modeDesc" style="margin:0;">No reminders yet.</div>';
     return;
@@ -926,10 +974,41 @@ async function renderRemindPanel() {
   try {
     const data = await remindersApi({ action: "list" });
     renderRemindList(data.reminders);
+    const nudge = data.reminders.find(r => r.tag === "daily-nudge" && !r.sent);
+    if (nudge) {
+      const t = new Date(nudge.due);
+      $("nudgeStatus").textContent = `Active: "${nudge.text}" every day at ${t.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}.`;
+      $("nudgeTime").value = t.toTimeString().slice(0, 5);
+      $("nudgeText").value = nudge.text;
+    } else {
+      $("nudgeStatus").textContent = "";
+    }
   } catch (e) {
     $("remindList").innerHTML = `<div class="modeDesc" style="margin:0; color:var(--danger);">Couldn't load reminders: ${escapeHtml(e.message)}</div>`;
   }
 }
+
+$("nudgeSetBtn").addEventListener("click", async () => {
+  const out = $("nudgeStatus");
+  const timeVal = $("nudgeTime").value;
+  const text = $("nudgeText").value.trim();
+  if (!timeVal) { out.textContent = "Pick a time."; return; }
+  if (!text) { out.textContent = "Say what the nudge should tell you."; return; }
+  const [h, m] = timeVal.split(":").map(Number);
+  const due = new Date();
+  due.setHours(h, m, 0, 0);
+  if (due.getTime() <= Date.now()) due.setDate(due.getDate() + 1);
+  out.textContent = "saving…";
+  try {
+    const data = await remindersApi({ action: "add", text, due: due.getTime(), repeat: "daily", tag: "daily-nudge" });
+    out.textContent = (hasNotif && Notification.permission === "granted")
+      ? `Set — "${text}" every day at ${timeVal}.`
+      : `Set — but enable notifications above or it won't reach your phone.`;
+    renderRemindList(data.reminders);
+  } catch (e) {
+    out.textContent = `Error: ${e.message}`;
+  }
+});
 
 function urlBase64ToUint8Array(base64String) {
   const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
@@ -999,6 +1078,8 @@ if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("sw.js").catch(() => {});
   });
 }
+
+renderExamCountdown();
 </script>
 </body>
 </html>
