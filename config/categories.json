@@ -1,0 +1,12 @@
+{
+  "_comment": "Maps sheet 'Category' values (case-insensitive) to a class. Edit after the questionnaire. Classes: goal = moves the roadmap; income = paid work; maintenance = body/admin; rest = deliberate recovery; drift = unintended time loss. 'Sleep' is excluded from time-allocation shares.",
+  "date_order": "DMY",
+  "sleep_category": "Sleep",
+  "classes": {
+    "goal": ["Study", "Quant", "Philosophy", "German", "Career"],
+    "income": ["Work", "Freelance"],
+    "maintenance": ["Health", "Admin", "Chores", "Meals", "Commute"],
+    "rest": ["Rest", "Social", "Meditation"],
+    "drift": ["Drift", "Social Media", "Scrolling", "Entertainment"]
+  }
+}

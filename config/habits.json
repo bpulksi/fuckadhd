@@ -1,0 +1,9 @@
+{
+  "_comment": "Machine-readable habit definitions for streaks. Human plan: habits/plan.md. A habit is 'done' on a day when matching entries sum to >= min_minutes (and, if max_time is set, an entry matches at or before that time). Values marked TBD are provisional until questionnaire section B is answered.",
+  "habits": [
+    {"id": "wake", "name": "Wake anchor (Weckanker)", "activity_regex": "wake|aufgestanden|aufwachen|got up", "max_time": "07:30", "min_minutes": 0},
+    {"id": "deep", "name": "Deep block 90 min (Tiefenarbeit)", "categories": ["Study", "Quant", "Philosophy", "Career"], "min_minutes": 90},
+    {"id": "german", "name": "German 20 min (Deutsch)", "categories": ["German"], "min_minutes": 20},
+    {"id": "review", "name": "Evening review (Abendreview)", "activity_regex": "evening review|abendreview|abendr|tagesreview|review", "min_minutes": 0}
+  ]
+}

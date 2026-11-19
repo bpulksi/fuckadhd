@@ -1,3 +1,6 @@
 .vercel/
 node_modules/
 SECRETS-SETUP.txt
+data/
+__pycache__/
+*.pyc
