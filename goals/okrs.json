@@ -1,0 +1,36 @@
+{
+  "_comment": "Machine-readable OKRs for the current 12-week cycle. Rendered into dashboard.md. Human narrative: goals/2026-C1.md. kinds: minutes (sheet, categories, weekly_target|target), days (sheet, habit id, target), sleep_nights (sheet, min_minutes, target), logged_days (sheet, target), manual (current/target). target:null = not yet defined -> shown as 'target TBD', never faked. Every number marked tbd:true must be confirmed via the questionnaire.",
+  "cycle": {"id": "2026-C1", "start": "2026-11-23", "weeks": 12},
+  "objectives": [
+    {
+      "id": "O1",
+      "title": "Finish the master's (Phase 1) with no loose ends",
+      "title_de": "Masterabschluss ohne offene Enden",
+      "krs": [
+        {"id": "KR1.1", "text": "Study deep-work hours (thesis + exam prep)", "kind": "minutes", "categories": ["Study"], "weekly_target": 900, "tbd": true},
+        {"id": "KR1.2", "text": "Open master's deliverables completed (exams passed / thesis milestones)", "kind": "manual", "current": 0, "target": null, "unit": "items", "tbd": true}
+      ]
+    },
+    {
+      "id": "O2",
+      "title": "Generate the evidence for the decision gate (quant vs. second master's vs. other)",
+      "title_de": "Entscheidungsgrundlage für das Decision Gate erzeugen",
+      "krs": [
+        {"id": "KR2.1", "text": "Quant exploration hours (study, projects, paper trading)", "kind": "minutes", "categories": ["Quant"], "weekly_target": 300, "tbd": true},
+        {"id": "KR2.2", "text": "Philosophy/psychology exploration hours (MAPP prep, reading, writing)", "kind": "minutes", "categories": ["Philosophy"], "weekly_target": 300, "tbd": true},
+        {"id": "KR2.3", "text": "Gate criteria fully specified (questionnaire answered, thresholds set)", "kind": "manual", "current": 0, "target": 1, "unit": "done", "tbd": false},
+        {"id": "KR2.4", "text": "Days with a logged Logbuch entry (data quality is the evidence)", "kind": "logged_days", "target": 67, "tbd": false}
+      ]
+    },
+    {
+      "id": "O3",
+      "title": "Stabilise the base: German, sleep, review rhythm",
+      "title_de": "Fundament stabilisieren: Deutsch, Schlaf, Reviewrhythmus",
+      "krs": [
+        {"id": "KR3.1", "text": "Days with >= 20 min German", "kind": "days", "habit": "german", "target": 60, "tbd": false},
+        {"id": "KR3.2", "text": "Nights with >= 7 h sleep logged", "kind": "sleep_nights", "min_minutes": 420, "target": 60, "tbd": true},
+        {"id": "KR3.3", "text": "Days with an evening review", "kind": "days", "habit": "review", "target": 70, "tbd": false}
+      ]
+    }
+  ]
+}
