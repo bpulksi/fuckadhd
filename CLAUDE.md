@@ -62,7 +62,7 @@ He logs by voice with the code word "Logbuch" (capture prompt: `docs/capture-pro
 6. **Roadmap integrity.** The decision gate is decided by pre-registered criteria, not by recent mood. Changing a
    criterion requires an entry in the reviews with a reason, and his approval.
 7. **Approval gates.** Ask before: changing `roadmap/life-map.md` structure, changing OKR targets mid-cycle,
-   archiving a cycle, anything outside this repo, committing/pushing. Otherwise act, don't ask.
+   archiving a cycle, anything outside this repo, committing changes outside the review skills. Otherwise act, don't ask.
 8. **Wellbeing guardrail.** Biohacking and sleep advice is behavioural, not medical. No supplement, fasting or
    dosing advice beyond mainstream guidance; point to a doctor for symptoms. If entries show sustained low mood
    (≤ 3/10 for ≥ 7 days), repeated sleep < 5 h, or hopeless notes: stop optimising, ask how he is, suggest support
@@ -96,7 +96,8 @@ When he corrects you ("no, not like that", "I told you", a wrong fact, a tone co
 3. If the rule is general, also add a one-line bullet in section 5 or the relevant skill. Never repeat a logged mistake.
 
 ## 9. Conventions
-- Commit messages: `daily YYYY-MM-DD`, `weekly YYYY-Www`, `quarterly YYYY-Cn`, `system: <change>`. Commit only when he asks.
+- Commit messages: `daily YYYY-MM-DD`, `weekly YYYY-Www`, `quarterly YYYY-Cn`, `system: <change>`. `/daily`, `/weekly`, `/quarterly`, `/intake` end by committing
+  and pushing automatically (keeps the phone dashboard current; he approved 2026-11-24). Other commits: ask first.
 - Bars: `█████░░░░░ 50%` (10 cells). Sparklines `▁▂▃▄▅▆▇█`. Charts: Mermaid (xychart-beta, pie, quadrantChart, gantt),
   rendered by GitHub; xychart has no legend, so put the mark key in a caption under the chart, keep titles short.
 - Scripts are stdlib-only Python 3. Keep them that way.
