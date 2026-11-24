@@ -16,6 +16,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 from common import (ROOT, bar, connect, daterange, load_json, pearson, spark,  # noqa: E402
                     today_berlin)
 import charts  # noqa: E402
+from render_html import md_to_html  # noqa: E402
 
 
 # ---------- data access ----------
@@ -372,7 +373,9 @@ def main() -> None:
         print(text)
     else:
         Path(a.out).write_text(text, encoding="utf-8")
-        print(f"wrote {a.out}")
+        html_path = Path(a.out).with_suffix(".html")  # dashboard.html: phone view, published by Vercel
+        html_path.write_text(md_to_html(text, "Logbuch Dashboard"), encoding="utf-8")
+        print(f"wrote {a.out} and {html_path}")
 
 
 if __name__ == "__main__":

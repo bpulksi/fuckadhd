@@ -1,0 +1,16 @@
+# Logbuch: keep personal files off the public Vercel site.
+# Of the Logbuch files, only dashboard.html is published. The planner app (index.html, api/, sw.js, icons) is unaffected.
+CLAUDE.md
+corrections.md
+questionnaire.md
+dashboard.md
+journal/
+reviews/
+goals/
+habits/
+config/
+roadmap/
+docs/
+scripts/
+data/
+.claude/
