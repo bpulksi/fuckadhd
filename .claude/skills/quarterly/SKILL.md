@@ -33,4 +33,4 @@ of the cycle, `habits/plan.md`.
    `goals/<cycle>.md` and `goals/okrs.json` (new cycle id and start date, Monday, 12 weeks), update `habits/plan.md`
    (promotions per the unlock rule; ≤ 4 active), update the life map's "you are here" and the Gantt dates in §1b, regenerate the dashboard.
 8. **Close.** ≤ 20 lines: scores, 3 data-backed truths, gate verdict, next-cycle theme, the one decision he owes you.
-   Do not commit unless asked (suggested message: `quarterly YYYY-Cn`).
+   After his approval and step 7, commit and push as `quarterly YYYY-Cn`.

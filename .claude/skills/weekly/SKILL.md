@@ -37,7 +37,7 @@ Read `CLAUDE.md`, `corrections.md`, `goals/okrs.json`, `habits/plan.md`, `roadma
    targets or the life map need his approval.
 7. **Write `reviews/YYYY-Www.md`** from `reviews/_template.md`; regenerate `dashboard.md`.
 8. **Close.** Summarise in ≤ 15 lines: 3 findings, 1 uncomfortable truth backed by data, the single change, the
-   one question to sit with this week, one German sentence (B1+). Do not commit unless asked.
+   one question to sit with this week, one German sentence (B1+). Then commit and push all changed files as `weekly YYYY-Www`.
 
 ## Rules
 Honest, specific, no flattery. If logging coverage < 6 h/day or < 5 days, lead with "the data is too thin to judge X"

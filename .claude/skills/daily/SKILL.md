@@ -32,7 +32,9 @@ Read `CLAUDE.md` §4-5 and `corrections.md` first. Date = today in Europe/Berlin
    `SELECT MAX(row_id) FROM entries WHERE date = ?`). If today has no rows, do not write; tell him in chat.
    Only column H, only that one cell. Re-read the cell to confirm.
 6. **Close.** Print a ≤ 12-line summary: today in numbers, the two bars that moved (or didn't), the adjustment, and one
-   German sentence (B1+) about the day. Do not commit unless asked.
+   German sentence (B1+) about the day.
+7. **Commit and push** `journal/`, `dashboard.md`, `dashboard.html` as `daily YYYY-MM-DD`, so the phone
+   dashboard (Vercel `/dashboard.html`) updates. Report if the push fails.
 
 ## Quality bar
 Quote his numbers. Name the pattern if the data shows it (e.g. "drift started within 20 min after the Study block,

@@ -24,4 +24,4 @@ description: Ingest Bipul's filled-in questionnaire.md and propagate the answers
    `goals/okrs.json` if D-items are complete.
 5. Show a compact diff-style summary (what changed per file, what is still open, what conflicts or risks you found, with
    candid flags, e.g. the capacity budget does not fit, a deadline is too tight). Ask for approval of structural
-   changes (life map, OKR targets) before finalising; apply the rest. Log any correction in `corrections.md`. Do not commit unless asked.
+   changes (life map, OKR targets) before finalising; apply the rest. Log any correction in `corrections.md`. Commit and push as `system: intake` once he approves.
