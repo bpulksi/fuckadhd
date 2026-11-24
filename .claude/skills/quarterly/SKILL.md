@@ -23,12 +23,14 @@ of the cycle, `habits/plan.md`.
    - Check the hard gates and the data-minimum table (§4). Compute weighted totals with the **pre-registered** weights.
    - Verdict: *Gate not open* / *Open, undecided* / *Decided: path X*. If not open, say exactly which evidence is missing
      and design the cheapest sprint to get it. Apply the regret check from §3.1. Never move weights to change a result.
+   - Update `feasibility` (0–1) and `scored_on` per path in `roadmap/gate.json` from the non-energy criteria only,
+     with the reason in the review; the dashboard quadrant chart plots it. Never set it to move a path into a quadrant.
    - Write the verdict into `reviews/YYYY-Cn-quarterly.md`.
 6. **Next OKRs (draft for approval).** 3 objectives max, 2-4 measurable KRs each. Start from the evidence: raise targets
    that were easy, fix ones that were mis-set, add a KR per gate evidence gap, keep Phase 1 first. Each KR must name its
    data source (sheet category, habit id, or manual). Check the capacity budget (hours/week) against `questionnaire.md` C6.
 7. **Apply after approval:** move the old cycle to `goals/archive/` (md + json copy as `<cycle>.json`), write the new
    `goals/<cycle>.md` and `goals/okrs.json` (new cycle id and start date, Monday, 12 weeks), update `habits/plan.md`
-   (promotions per the unlock rule; ≤ 4 active), update the life map's "you are here", regenerate the dashboard.
+   (promotions per the unlock rule; ≤ 4 active), update the life map's "you are here" and the Gantt dates in §1b, regenerate the dashboard.
 8. **Close.** ≤ 20 lines: scores, 3 data-backed truths, gate verdict, next-cycle theme, the one decision he owes you.
    Do not commit unless asked (suggested message: `quarterly YYYY-Cn`).

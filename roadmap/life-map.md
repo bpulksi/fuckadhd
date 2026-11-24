@@ -47,8 +47,57 @@ flowchart TD
     classDef fin fill:#e1bee7,stroke:#6a1b9a,color:#000
 ```
 
-**You are here:** Phase 1, week 0 of cycle 2026-C1. Evidence sprints and the base lane run in parallel with the master's,
+**You are here:** Phase 1, week 1 of cycle 2026-C1 (first entry logged 2026-11-23). Evidence sprints and the base lane run in parallel with the master's,
 bounded by the weekly-hours budget (capacity check pending `TBD(Q-C6)`; Phase 1 gets priority).
+
+### 1b. Timeline (Zeitachse)
+
+The red line is today (GitHub draws it automatically). **Every end date except cycle C1 is a placeholder** until the
+questionnaire is answered; the bars show order and rough length, not commitments. Only one of the three paths will run.
+
+```mermaid
+gantt
+    title Life map, Nov 2026 to Nov 2029 (placeholder dates marked TBD)
+    dateFormat YYYY-MM-DD
+    axisFormat %b %y
+    todayMarker stroke-width:3px,stroke:#d32f2f,opacity:0.8
+
+    section Phase 1
+    Finish master's FINEC, end TBD Q-A1      :active, p1, 2026-11-23, 2027-03-31
+
+    section 12-week cycles
+    C1 baseline and evidence                 :c1, 2026-11-23, 2027-02-14
+    C2                                       :c2, 2027-02-15, 2027-05-09
+    C3                                       :c3, 2027-05-10, 2027-08-01
+    C4                                       :c4, 2027-08-02, 2027-10-24
+
+    section Decision gate
+    Evidence sprints Quant and Philosophy    :ev, 2026-11-23, 2027-02-14
+    Gate open and scoring, TBD Q-D10         :crit, gate, 2027-02-15, 2027-04-30
+    Decision                                 :milestone, dec, 2027-04-30, 0d
+
+    section Path Q quant
+    Interview pipeline and projects          :q1, 2027-05-01, 2027-10-31
+    First role and ramp-up                   :q2, 2027-11-01, 2029-11-23
+
+    section Path M second master
+    Applications and funding, TBD Q-D5       :m1, 2027-05-01, 2027-12-31
+    Programme years 1-2                      :m2, 2028-09-01, 2029-11-23
+
+    section Path O other or hybrid
+    Build chosen route                       :o1, 2027-05-01, 2029-11-23
+
+    section Base lane
+    German B1+ to B2, TBD Q-E1               :g1, 2026-11-23, 2027-11-30
+    Income bridge BK and freelance           :b1, 2026-11-23, 2027-10-31
+
+    section Checkpoint
+    3-year review                            :milestone, r3, 2029-11-23, 0d
+```
+
+> ⚠ **Check this when D5 is answered:** if a second master's programme's application deadline falls *before* the gate
+> decision (Apr 2027 placeholder), the gate has to move earlier, or the application is sent as a cheap option without a final decision.
+> Programme application deadlines are often months before the start date.
 
 ## 2. Phase 1: Finish the master's (Masterabschluss)
 - **Exit criteria:** all credit points earned; thesis submitted and graded; Zeugnis/Urkunde requested.

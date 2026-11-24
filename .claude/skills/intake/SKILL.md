@@ -12,7 +12,8 @@ description: Ingest Bipul's filled-in questionnaire.md and propagate the answers
 3. **Propagate:**
    - `CLAUDE.md` §1-2 (identity facts, values, dates). Keep < 150 lines.
    - `roadmap/life-map.md`: dates, "you are here", gate weights from D1 (normalise to 100), hard gates, evidence
-     thresholds from D9, decision deadline D10, the verified MAPP programme (D5). Correct any wrong assumption and say what changed.
+     thresholds from D9, decision deadline D10, the verified MAPP programme (D5). Correct any wrong assumption and say what changed. Replace the placeholder dates in the Gantt (§1b).
+   - `roadmap/gate.json`: energy categories per path; first feasibility scores (0–1) only if D3/D5/D7 give enough to judge, else leave null.
    - `goals/okrs.json` + `goals/2026-C1.md`: confirm or replace ⚑ targets (study hours from A/C6, exploration hours,
      sleep target from B1); set `"tbd": false` once confirmed; run the capacity check (sum of weekly goal hours vs. C6).
    - `habits/plan.md` + `config/habits.json`: wake time (B1), deep-block timing (B4), German mode (E2), leaks (B6),
