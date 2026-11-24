@@ -1,6 +1,6 @@
 {
-  "_comment": "Maps sheet 'Category' values (case-insensitive) to a class. Edit after the questionnaire. Classes: goal = moves the roadmap; income = paid work; maintenance = body/admin; rest = deliberate recovery; drift = unintended time loss. 'Sleep' is excluded from time-allocation shares.",
-  "date_order": "DMY",
+  "_comment": "date_order MDY because the sheet locale is en_US (get_values returns M/D/YYYY for real date cells). Maps sheet 'Category' values (case-insensitive) to a class. Edit after the questionnaire. Classes: goal = moves the roadmap; income = paid work; maintenance = body/admin; rest = deliberate recovery; drift = unintended time loss. 'Sleep' is excluded from time-allocation shares.",
+  "date_order": "MDY",
   "sleep_category": "Sleep",
   "classes": {
     "goal": ["Study", "Quant", "Philosophy", "German", "Career"],
