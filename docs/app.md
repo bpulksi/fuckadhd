@@ -1,4 +1,4 @@
-# App architecture (Fuck ADHD + Logbuch)
+# App architecture: Carl (formerly Fuck ADHD) with Logbuch
 
 One installable PWA. Plain JavaScript ES modules, no build step, no framework. Deployed by Vercel from the repo root;
 serverless functions in `api/`, data in Upstash Redis (planner) and the Google Sheet (Logbuch).

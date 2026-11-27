@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Fuck ADHD</title>
-<meta name="description" content="One thing at a time: day plan, focus, timer, reminders.">
-<meta name="apple-mobile-web-app-title" content="Fuck ADHD">
+<title>Carl</title>
+<meta name="description" content="Carl: your Logbuch. Get your life in place, one thing at a time.">
+<meta name="apple-mobile-web-app-title" content="Carl">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0b0d12" media="(prefers-color-scheme: dark)">
 <meta name="theme-color" content="#f4f0e6" media="(prefers-color-scheme: light)">
@@ -38,6 +38,7 @@
   <symbol id="i-wave" viewBox="0 0 24 24"><path d="M3 9h10.5a3 3 0 1 0-3-3M3 15h13.5a3 3 0 1 1-3 3M3 12h18"/></symbol>
   <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></symbol>
   <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3M19.5 4.5v4.5H15"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M21 20H3"/></symbol>
   <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></symbol>
 </svg>
 
@@ -49,7 +50,7 @@
   <!-- ============ TODAY ============ -->
   <section class="view" id="view-home" aria-labelledby="homeTitle">
     <header class="page-head">
-      <div class="brand"><span class="brand-mark" data-geo="seed"></span><span>Fuck ADHD</span></div>
+      <div class="brand"><span class="brand-mark" data-geo="seed"></span><span>Carl</span></div>
       <p class="eyebrow" id="todayDate"></p>
       <h1 id="homeTitle" tabindex="-1">One thing at a time.</h1>
       <p class="lede">The rest can wait.</p>
@@ -182,6 +183,37 @@
           <input id="breakMinutes" type="number" inputmode="numeric" min="1" max="60" value="5">
         </div>
       </div>
+    </div>
+  </section>
+
+  <!-- ============ INSIGHTS (Logbuch) ============ -->
+  <section class="view" id="view-insights" aria-labelledby="insightsTitle">
+    <header class="page-head compact">
+      <p class="eyebrow">Logbuch</p>
+      <h1 id="insightsTitle" tabindex="-1">Insights</h1>
+      <p class="lede">Your life, measured honestly: goals, habits, sleep, energy, where the time goes.</p>
+    </header>
+
+    <details class="card explainer" id="logbuchExplainer">
+      <summary><span class="tool-icon"><svg class="icon"><use href="#i-spark"/></svg></span><span><strong>What Logbuch does</strong><small>How Carl helps you get your life in place</small></span></summary>
+      <ol class="steps">
+        <li><strong>You log, by voice.</strong> Say "Logbuch, 90 minutes thesis, energy 7" in the Claude app. Every entry lands in your Google Sheet: what, how long, how you felt.</li>
+        <li><strong>Every evening, <code>/daily</code>.</strong> Claude reads the day, updates this dashboard, writes a short journal entry and gives you <em>one</em> concrete adjustment for tomorrow.</li>
+        <li><strong>Every Sunday, <code>/weekly</code>.</strong> Patterns, excuses checked against your own data, habit streaks, and at most one change to your plan.</li>
+        <li><strong>Every 12 weeks, <code>/quarterly</code>.</strong> Score your goals (OKRs), set the next ones, and review the career decision gate: quant, second master's, or another path, decided with evidence, not mood.</li>
+      </ol>
+      <p class="hint">The more honestly you log, drift included, the sharper this gets. After 4 to 6 weeks the decision-gate chart starts to mean something.</p>
+    </details>
+
+    <div class="card dash-frame-card">
+      <div class="card-head">
+        <h2>Dashboard</h2>
+        <button class="btn btn-sm btn-quiet" type="button" id="dashReloadBtn"><svg class="icon"><use href="#i-refresh"/></svg><span>Refresh</span></button>
+      </div>
+      <p class="meta" id="dashMeta">Updated after each review</p>
+      <div id="dashSkeleton" class="skeleton-stack" aria-hidden="true"><span class="skeleton"></span><span class="skeleton"></span><span class="skeleton short"></span></div>
+      <div id="dashError" class="error-box" hidden><span>Couldn't load the dashboard. It appears after the first review is pushed.</span><button class="btn btn-sm btn-secondary" type="button" id="dashRetryBtn">Retry</button></div>
+      <iframe id="dashFrame" title="Logbuch dashboard" class="dash-frame" hidden></iframe>
     </div>
   </section>
 
@@ -385,6 +417,7 @@
   <button class="tab" type="button" data-tab="home"><svg class="icon"><use href="#i-sun"/></svg><span>Today</span></button>
   <button class="tab" type="button" data-tab="focus"><svg class="icon"><use href="#i-target"/></svg><span>Focus</span></button>
   <button class="tab" type="button" data-tab="timer"><svg class="icon"><use href="#i-timer"/></svg><span>Timer</span></button>
+  <button class="tab" type="button" data-tab="insights"><svg class="icon"><use href="#i-chart"/></svg><span>Insights</span></button>
   <button class="tab" type="button" data-tab="more"><svg class="icon"><use href="#i-more"/></svg><span>Tools</span></button>
 </nav>
 

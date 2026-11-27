@@ -41,7 +41,7 @@ export default async function handler(req, res) {
 
   for (const reminder of due) {
     const payload = JSON.stringify({
-      title: "Don't forget",
+      title: "Carl",
       body: reminder.text
     });
     for (const sub of subs) {

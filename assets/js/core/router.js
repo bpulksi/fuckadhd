@@ -1,7 +1,7 @@
 // Hash router: #home, #focus, #ai:ask … so the phone's back gesture and deep links work.
 import { $ } from "./dom.js";
 
-const TABS = ["home", "focus", "timer", "more"];
+const TABS = ["home", "focus", "timer", "insights", "more"];
 const PARENT = { ai: "more", remind: "more", braindump: "more", settings: "more" };
 const hooks = new Map();
 let current = null;

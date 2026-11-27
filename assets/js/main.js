@@ -11,6 +11,7 @@ import { initTimer } from "./features/timer.js";
 import { initBraindump } from "./features/braindump.js";
 import { initRemind } from "./features/remind.js";
 import { initSettings } from "./features/settings.js";
+import { initInsights } from "./features/insights.js";
 
 mountGeometry();
 
@@ -23,6 +24,7 @@ initTimer();
 initBraindump();
 initRemind();
 initSettings();
+initInsights();
 
 onShow("home", () => {
   renderToday();

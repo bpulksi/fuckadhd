@@ -1,5 +1,5 @@
 // Network-first for the app shell so updates arrive; cache is the offline fallback. API calls are never cached.
-const CACHE_NAME = "adhd-assistant-shell-v9";
+const CACHE_NAME = "carl-shell-v10";
 const SHELL_FILES = [
   "/", "/index.html", "/manifest.json", "/icon-192.png", "/icon-512.png",
   "/assets/css/tokens.css", "/assets/css/app.css",
@@ -7,7 +7,7 @@ const SHELL_FILES = [
   "/assets/js/ui/geometry.js", "/assets/js/ui/toast.js",
   "/assets/js/features/lines.js", "/assets/js/features/modes.js", "/assets/js/features/wins.js", "/assets/js/features/deadlines.js",
   "/assets/js/features/today.js", "/assets/js/features/ai.js", "/assets/js/features/focus.js", "/assets/js/features/timer.js",
-  "/assets/js/features/braindump.js", "/assets/js/features/remind.js", "/assets/js/features/settings.js"
+  "/assets/js/features/braindump.js", "/assets/js/features/remind.js", "/assets/js/features/settings.js", "/assets/js/features/insights.js"
 ];
 
 self.addEventListener("install", event => {
@@ -45,7 +45,7 @@ self.addEventListener("fetch", event => {
 });
 
 self.addEventListener("push", event => {
-  let data = { title: "Don't forget", body: "You have a reminder." };
+  let data = { title: "Carl", body: "You have a reminder." };
   try { data = event.data.json(); } catch {}
   event.waitUntil(
     self.registration.showNotification(data.title || "Don't forget", {

@@ -1,6 +1,7 @@
 {
-  "name": "Fuck ADHD",
-  "short_name": "Fuck ADHD",
+  "name": "Carl — Logbuch",
+  "short_name": "Carl",
+  "description": "Get your life in place, one thing at a time.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0b0d12",
