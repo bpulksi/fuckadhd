@@ -1,4 +1,4 @@
-# OpenClaw on your Android phone + Fuck ADHD
+# OpenClaw on your Android phone + Carl
 
 OpenClaw is a self-hosted AI assistant. Running it directly on the phone
 (inside Termux) means no PC needs to be on — the phone is the host AND the
@@ -7,7 +7,7 @@ cloud API, and the app's push pipeline delivers them.
 
 - **OpenClaw = capture.** Text it "remind me tomorrow 9am to submit the form"
   from anywhere.
-- **Fuck ADHD cloud = delivery.** Reminders live in Upstash Redis and are
+- **Carl cloud = delivery.** Reminders live in Upstash Redis and are
   pushed by GitHub Actions — delivery works even if OpenClaw/Termux dies.
 
 ## Honest warnings before you start
@@ -51,7 +51,7 @@ cloud API, and the app's push pipeline delivers them.
 ## The skill (paste into OpenClaw)
 
 ```markdown
-# Skill: Fuck ADHD reminders
+# Skill: Carl reminders
 
 When the user asks to be reminded of something, store it in their reminder app
 (do NOT keep it only in memory) by calling:

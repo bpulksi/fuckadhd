@@ -1,0 +1,9 @@
+{
+  "_comment": "Decision-gate chart inputs (dashboard.md quadrant). energy = mean Mood/Energy of blocks in energy_categories this cycle, scaled (e-1)/9; plotted only with >= min_energy_ratings ratings. feasibility = 0..1 judgement from the path's non-energy criteria in roadmap/life-map.md section 3 (skills fit, market access, admissibility, funding, economics). null = not yet scored; set it during /intake or /quarterly, never from mood, and log the reason in that review.",
+  "min_energy_ratings": 5,
+  "paths": [
+    {"id": "Q", "name": "Quant", "energy_categories": ["Quant"], "feasibility": null, "scored_on": null},
+    {"id": "M", "name": "Second master", "energy_categories": ["Philosophy"], "feasibility": null, "scored_on": null},
+    {"id": "O", "name": "Other", "energy_categories": ["Freelance", "Career"], "feasibility": null, "scored_on": null}
+  ]
+}
