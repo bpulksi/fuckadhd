@@ -2,417 +2,89 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Fuck ADHD</title>
+<meta name="description" content="One thing at a time: day plan, focus, timer, reminders.">
 <meta name="apple-mobile-web-app-title" content="Fuck ADHD">
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#070714">
+<meta name="theme-color" content="#0b0d12" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#f4f0e6" media="(prefers-color-scheme: light)">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="apple-touch-icon" href="icon-192.png">
-<style>
-  :root {
-    --bg: #070714;
-    --panel: rgba(22, 22, 46, 0.6);
-    --panel2: rgba(36, 36, 70, 0.8);
-    --border: rgba(139, 130, 255, 0.16);
-    --border-strong: rgba(139, 130, 255, 0.36);
-    --text: #eceafd;
-    --muted: #a5a3c8;
-    --accent: #8b7cff;
-    --accent-deep: #6c5ce7;
-    --accent2: #6ee7b7;
-    --danger: #ff8f8f;
-  }
-  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-  html { background: var(--bg); }
-  body {
-    margin: 0;
-    font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
-    background:
-      radial-gradient(ellipse 80% 50% at 20% -10%, rgba(108, 92, 231, 0.14), transparent 60%),
-      radial-gradient(ellipse 70% 45% at 90% 15%, rgba(45, 120, 190, 0.10), transparent 65%),
-      var(--bg);
-    background-attachment: fixed;
-    color: var(--text);
-    min-height: 100vh;
-  }
-  #starfield { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
-  .star {
-    position: absolute;
-    background: #fff;
-    border-radius: 50%;
-    opacity: 0.4;
-    animation: twinkle 3s ease-in-out infinite;
-  }
-  @keyframes twinkle {
-    0%, 100% { opacity: 0.1; }
-    50% { opacity: 0.7; }
-  }
-  #app {
-    position: relative;
-    z-index: 1;
-    max-width: 560px;
-    margin: 0 auto;
-    padding: 24px 20px calc(40px + env(safe-area-inset-bottom));
-  }
-  .view { display: none; }
-  .view.active { display: block; }
-
-  .homeHeader { text-align: center; padding: 8vh 0 5vh; }
-  .orbMini {
-    width: 52px; height: 52px;
-    border-radius: 50%;
-    margin: 0 auto 14px;
-    background: radial-gradient(circle at 35% 32%, #d8ccff, #8b7cff 45%, #3b2f8f 85%);
-    box-shadow: 0 0 28px rgba(139, 124, 255, 0.5), 0 0 80px rgba(139, 124, 255, 0.2);
-  }
-  h1 { font-size: 24px; margin: 0; letter-spacing: 4px; font-weight: 600; }
-  .tagline { color: var(--muted); font-size: 13.5px; margin: 8px 0 0; }
-  #examCountdown {
-    margin-top: 18px;
-    font-size: 13.5px;
-    color: var(--accent2);
-    cursor: pointer;
-  }
-  #examCountdown.unset { color: var(--muted); }
-  #examCountdown .days { font-weight: 600; font-size: 15px; }
-  .menu { margin-top: 3vh; }
-  .menuItem {
-    display: block;
-    width: 100%;
-    background: none;
-    border: none;
-    border-bottom: 1px solid var(--border);
-    color: var(--text);
-    text-align: left;
-    font-family: inherit;
-    font-size: 19px;
-    padding: 18px 6px;
-    cursor: pointer;
-    min-height: 56px;
-  }
-  .menuItem:first-child { border-top: 1px solid var(--border); }
-  .menuItem:active { background: rgba(139, 124, 255, 0.08); }
-  .subMenu {
-    text-align: center;
-    margin-top: 4vh;
-    font-size: 13.5px;
-    color: var(--muted);
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 4px 0;
-  }
-  .subMenu button {
-    background: none;
-    border: none;
-    color: var(--muted);
-    font-family: inherit;
-    font-size: 13.5px;
-    padding: 10px 6px;
-    cursor: pointer;
-    min-height: 44px;
-  }
-  .subMenu .dot { align-self: center; opacity: 0.5; }
-
-  .toolHeader { display: flex; align-items: center; gap: 10px; padding: 4px 0 20px; }
-  .backBtn {
-    background: none;
-    border: 1px solid var(--border);
-    border-radius: 50%;
-    width: 44px; height: 44px;
-    color: var(--text);
-    font-size: 19px;
-    cursor: pointer;
-    flex: 0 0 auto;
-    line-height: 1;
-  }
-  .toolTitle { color: var(--muted); font-size: 14px; letter-spacing: 2px; text-transform: uppercase; }
-
-  label { font-size: 12.5px; color: var(--muted); display: block; margin-bottom: 5px; }
-  textarea, input, select {
-    width: 100%;
-    background: var(--panel2);
-    border: 1px solid var(--border);
-    color: var(--text);
-    border-radius: 12px;
-    padding: 12px;
-    font-family: inherit;
-    font-size: 15px;
-    resize: vertical;
-    min-height: 44px;
-  }
-  textarea:focus, input:focus, select:focus {
-    outline: none;
-    border-color: var(--border-strong);
-    box-shadow: 0 0 0 3px rgba(139, 124, 255, 0.12);
-  }
-  .field { margin-bottom: 14px; }
-  .checkins { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin: 12px 0 2px; }
-  button.primary {
-    background: linear-gradient(135deg, var(--accent-deep), var(--accent));
-    color: #fff;
-    border: none;
-    padding: 14px 22px;
-    border-radius: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    font-size: 16px;
-    min-height: 48px;
-    width: 100%;
-    box-shadow: 0 0 20px rgba(139, 124, 255, 0.25);
-  }
-  button.primary:disabled { opacity: 0.5; cursor: default; }
-  button.ghost {
-    background: transparent;
-    border: 1px solid var(--border-strong);
-    color: var(--muted);
-    padding: 10px 16px;
-    border-radius: 12px;
-    cursor: pointer;
-    font-size: 13.5px;
-    min-height: 44px;
-  }
-  #output { white-space: pre-wrap; line-height: 1.65; font-size: 15px; }
-  .firstStep {
-    background: rgba(139, 124, 255, 0.12);
-    border: 1px solid var(--border-strong);
-    border-radius: 12px;
-    padding: 12px 14px;
-    margin-bottom: 12px;
-    font-weight: 600;
-  }
-  #outputWrap { margin-top: 22px; }
-  .modeDesc { color: var(--muted); font-size: 13.5px; margin-bottom: 16px; line-height: 1.5; }
-  #status { font-size: 13px; color: var(--muted); margin-top: 10px; display: block; text-align: center; }
-  #status.err { color: var(--danger); }
-  details.ctx { margin-bottom: 14px; }
-  details.ctx summary {
-    cursor: pointer;
-    color: var(--muted);
-    font-size: 13.5px;
-    list-style: none;
-    padding: 6px 0;
-  }
-  details.ctx summary::before { content: "✦ "; color: var(--accent); font-size: 11px; }
-
-  .settingsBlock { border-bottom: 1px solid var(--border); padding: 18px 0; }
-  .settingsBlock:first-of-type { border-top: 1px solid var(--border); }
-  #aboutMe { min-height: 90px; }
-  .histItem { border-bottom: 1px solid var(--border); padding: 10px 0; font-size: 13px; }
-  .histItem:last-child { border-bottom: none; }
-  .histItem .mode { color: var(--accent2); font-weight: 600; }
-  .histItem .input { color: var(--muted); margin: 3px 0; }
-  .fbRow { display: flex; gap: 8px; margin-top: 6px; }
-  .fbRow button { font-size: 12px; padding: 6px 12px; min-height: 34px; }
-  .fbRow button.picked { background: var(--accent2); color: #0e0f13; border-color: var(--accent2); }
-
-  #focusTaskView { text-align: center; padding: 8vh 8px; }
-  #focusTaskView .taskText {
-    font-size: 28px;
-    font-weight: 600;
-    line-height: 1.4;
-    margin-bottom: 28px;
-    text-shadow: 0 0 30px rgba(139, 124, 255, 0.35);
-  }
-  #focusProgress { color: var(--muted); font-size: 13px; margin-bottom: 22px; }
-  .focusBtnRow { display: flex; flex-direction: column; gap: 10px; max-width: 300px; margin: 0 auto; }
-
-  .timerSettings { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
-  .timerSettings .field { margin-bottom: 0; }
-  .ringWrap { position: relative; width: 230px; height: 230px; margin: 8px auto 26px; }
-  #timerRing {
-    position: absolute;
-    inset: 0;
-    border-radius: 50%;
-    background: conic-gradient(var(--accent) var(--p, 0deg), rgba(139, 124, 255, 0.12) 0);
-    -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 9px), #000 calc(100% - 8px));
-    mask: radial-gradient(farthest-side, transparent calc(100% - 9px), #000 calc(100% - 8px));
-    filter: drop-shadow(0 0 10px rgba(139, 124, 255, 0.45));
-  }
-  .timeCenter { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
-  #timerDisplay { font-size: 46px; font-weight: 700; letter-spacing: 2px; }
-  #timerPhase { color: var(--accent2); font-weight: 600; font-size: 14px; letter-spacing: 2px; text-transform: uppercase; }
-  .timerBtnRow { display: flex; flex-direction: column; gap: 10px; max-width: 300px; margin: 0 auto; }
-
-  #brainDumpInput { min-height: 45vh; }
-  #breathBlock { text-align: center; padding-top: 4vh; }
-  #breathCircle {
-    width: 170px;
-    height: 170px;
-    border-radius: 50%;
-    background: radial-gradient(circle at 35% 32%, #d8ccff, #8b7cff 48%, #2c2370 88%);
-    box-shadow: 0 0 45px rgba(139, 124, 255, 0.5), 0 0 110px rgba(139, 124, 255, 0.2);
-    margin: 24px auto;
-    transform: scale(0.6);
-    transition: transform 4s ease-in-out;
-  }
-  #breathLabel { font-size: 17px; font-weight: 600; color: var(--accent2); letter-spacing: 1px; }
-  #breathCount { color: var(--muted); font-size: 13px; margin: 6px 0 16px; }
-
-  #winsLine {
-    margin-top: 10px;
-    font-size: 12.5px;
-    color: var(--muted);
-    cursor: pointer;
-  }
-  #winsLine .star { position: static; display: inline; background: none; animation: none; color: var(--accent2); opacity: 1; }
-  #todayBlock { margin: 0 0 22px; }
-  #todayBlock .blockTitle { font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
-  .planItem {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 4px;
-    border-bottom: 1px solid var(--border);
-    cursor: pointer;
-    min-height: 50px;
-  }
-  .planItem:first-of-type { border-top: 1px solid var(--border); }
-  .planCheck {
-    flex: 0 0 auto;
-    width: 24px; height: 24px;
-    border-radius: 50%;
-    border: 1.5px solid var(--border-strong);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 13px;
-    color: transparent;
-  }
-  .planItem.done .planCheck { background: var(--accent2); border-color: var(--accent2); color: #0e0f13; }
-  .planItem .planText { flex: 1; font-size: 15px; line-height: 1.4; }
-  .planItem.done .planText { color: var(--muted); text-decoration: line-through; }
-  .planItem .planDel { background: none; border: none; color: var(--muted); font-size: 15px; padding: 8px; cursor: pointer; opacity: 0.6; }
-  .planRowSmall { display: flex; gap: 8px; margin-top: 12px; }
-  .planRowSmall input { flex: 1; }
-  .planRowSmall button { flex: 0 0 auto; }
-  #planFormWrap .checkins { margin: 0 0 12px; }
-  #planStatus { text-align: center; }
-  #dailyWisdom {
-    margin-top: 5vh;
-    text-align: center;
-    color: var(--muted);
-    font-size: 13.5px;
-    font-style: italic;
-    line-height: 1.6;
-    padding: 0 10px;
-  }
-  #burstOverlay {
-    position: fixed;
-    inset: 0;
-    z-index: 50;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    pointer-events: none;
-    text-align: center;
-    padding: 0 30px;
-  }
-  #burstOverlay.show { display: flex; }
-  #burstRing {
-    position: absolute;
-    left: 50%; top: 50%;
-    width: 60px; height: 60px;
-    margin: -30px 0 0 -30px;
-    border-radius: 50%;
-    border: 2px solid var(--accent2);
-    box-shadow: 0 0 40px rgba(110, 231, 183, 0.6);
-    animation: burstRing 1.6s ease-out forwards;
-  }
-  #burstOverlay.deep #burstRing { border-color: var(--accent); box-shadow: 0 0 60px rgba(139, 124, 255, 0.8); animation-duration: 2.4s; }
-  @keyframes burstRing {
-    0% { transform: scale(0.4); opacity: 1; }
-    100% { transform: scale(9); opacity: 0; }
-  }
-  #burstText {
-    position: relative;
-    font-size: 16px;
-    line-height: 1.6;
-    color: var(--text);
-    text-shadow: 0 0 20px rgba(110, 231, 183, 0.5);
-    animation: burstText 2.2s ease-out forwards;
-    max-width: 420px;
-  }
-  #burstOverlay.deep #burstText { font-size: 17.5px; animation-duration: 3.4s; }
-  @keyframes burstText {
-    0% { opacity: 0; transform: translateY(8px); }
-    15% { opacity: 1; transform: translateY(0); }
-    80% { opacity: 1; }
-    100% { opacity: 0; }
-  }
-  #pathOverlay {
-    position: fixed;
-    inset: 0;
-    z-index: 60;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    background: rgba(7, 7, 20, 0.85);
-    padding: 20px;
-  }
-  #pathOverlay.show { display: flex; }
-  #pathCard {
-    background: var(--panel2);
-    border: 1px solid var(--border-strong);
-    border-radius: 18px;
-    padding: 22px 20px;
-    max-width: 420px;
-    width: 100%;
-    max-height: 80vh;
-    overflow-y: auto;
-  }
-  #pathCard h2 { font-size: 16px; margin: 0 0 4px; letter-spacing: 1px; }
-  #pathCard .sub { color: var(--muted); font-size: 12.5px; margin-bottom: 14px; }
-  .pathStage { padding: 8px 10px; border-radius: 10px; margin-bottom: 4px; font-size: 13.5px; color: var(--muted); }
-  .pathStage .meaning { font-size: 12px; opacity: 0.8; margin-top: 2px; }
-  .pathStage.current { background: rgba(139, 124, 255, 0.14); color: var(--text); border: 1px solid var(--border-strong); }
-  .pathStage.reached { color: var(--text); }
-  .goRow { display: flex; gap: 10px; align-items: stretch; }
-  .goRow .primary { flex: 1; }
-  .iconBtn {
-    flex: 0 0 auto;
-    width: 52px;
-    background: transparent;
-    border: 1px solid var(--border-strong);
-    border-radius: 14px;
-    color: var(--muted);
-    font-size: 19px;
-    cursor: pointer;
-  }
-  .iconBtn.active { background: rgba(139, 124, 255, 0.18); color: var(--text); border-color: var(--accent); }
-  .iconBtn.recording { background: rgba(255, 143, 143, 0.18); border-color: var(--danger); color: var(--danger); animation: recPulse 1.2s ease-in-out infinite; }
-  @keyframes recPulse { 0%,100% { opacity: 1; } 50% { opacity: 0.55; } }
-
-  @media (min-width: 700px) {
-    .focusBtnRow, .timerBtnRow { flex-direction: row; justify-content: center; }
-    button.primary { width: auto; }
-    .goRow .primary { width: auto; }
-    #brainDumpInput { min-height: 200px; }
-  }
-</style>
+<link rel="stylesheet" href="assets/css/tokens.css">
+<link rel="stylesheet" href="assets/css/app.css">
+<script type="module" src="assets/js/main.js"></script>
 </head>
 <body>
 
-<div id="starfield" aria-hidden="true"></div>
+<!-- Icon sprite: stroke icons, inherit currentColor -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M4.6 4.6 6 6M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4 6 18M18 6l1.4-1.4"/></symbol>
+  <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="0.8"/></symbol>
+  <symbol id="i-timer" viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M9.5 2.5h5"/></symbol>
+  <symbol id="i-more" viewBox="0 0 24 24"><circle cx="12" cy="7" r="2.6"/><circle cx="7.5" cy="15" r="2.6"/><circle cx="16.5" cy="15" r="2.6"/></symbol>
+  <symbol id="i-back" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></symbol>
+  <symbol id="i-chevron" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></symbol>
+  <symbol id="i-volume" viewBox="0 0 24 24"><path d="M11 5 6.5 9H3.5v6h3L11 19z"/><path d="M15.5 9a4.5 4.5 0 0 1 0 6M18.5 6a8.5 8.5 0 0 1 0 12"/></symbol>
+  <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3.5l1.7 5 5 1.7-5 1.7-1.7 5-1.7-5-5-1.7 5-1.7z"/></symbol>
+  <symbol id="i-split" viewBox="0 0 24 24"><path d="M5 6h14M5 12h9M5 18h5"/><circle cx="18" cy="16.5" r="2.5"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M20.5 12a8.5 8.5 0 0 1-12.4 7.5L3.5 20.5l1-4.4A8.5 8.5 0 1 1 20.5 12z"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 9a6 6 0 1 1 12 0c0 6.5 2.5 8.5 2.5 8.5h-17S6 15.5 6 9M10.2 20.5a2 2 0 0 0 3.6 0"/></symbol>
+  <symbol id="i-wave" viewBox="0 0 24 24"><path d="M3 9h10.5a3 3 0 1 0-3-3M3 15h13.5a3 3 0 1 1-3 3M3 12h18"/></symbol>
+  <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3M19.5 4.5v4.5H15"/></symbol>
+  <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></symbol>
+</svg>
 
-<div id="app">
+<div class="bg-geometry" id="bgGeometry" aria-hidden="true"></div>
+<a class="skip-link" href="#main">Skip to content</a>
 
-  <div class="view active" id="view-home">
-    <div class="homeHeader">
-      <div class="orbMini" aria-hidden="true"></div>
-      <h1>FUCK ADHD</h1>
-      <p class="tagline">one thing at a time — the rest can wait</p>
-      <div id="examCountdown" data-open="settings"></div>
-      <div id="winsLine"></div>
-    </div>
-    <div id="todayBlock">
-      <div class="blockTitle">Today</div>
-      <div id="planEmptyWrap">
-        <button class="primary" id="planMyDayBtn">Plan my day</button>
+<main id="main" class="app" tabindex="-1">
+
+  <!-- ============ TODAY ============ -->
+  <section class="view" id="view-home" aria-labelledby="homeTitle">
+    <header class="page-head">
+      <div class="brand"><span class="brand-mark" data-geo="seed"></span><span>Fuck ADHD</span></div>
+      <p class="eyebrow" id="todayDate"></p>
+      <h1 id="homeTitle" tabindex="-1">One thing at a time.</h1>
+      <p class="lede">The rest can wait.</p>
+    </header>
+
+    <div id="pinBanner" class="banner" role="status" hidden>
+      <div>
+        <strong>Connect your account</strong>
+        <p>Add your access PIN to sync your plan, deadlines and reminders.</p>
       </div>
-      <div id="planFormWrap" style="display:none;">
-        <div class="checkins" style="grid-template-columns: 1fr 1fr;">
-          <div>
+      <button class="btn btn-secondary" type="button" data-open="settings">Add PIN</button>
+    </div>
+
+    <button id="examCountdown" class="card countdown" type="button" data-open="settings" aria-label="Next deadline, open settings"></button>
+
+    <button id="winsLine" class="wins" type="button" aria-haspopup="dialog"></button>
+
+    <section class="card" id="todayBlock" aria-labelledby="todayTitle">
+      <div class="card-head">
+        <h2 id="todayTitle">Today</h2>
+        <span class="meta" id="planMeta"></span>
+      </div>
+
+      <div id="planSkeleton" class="skeleton-stack" aria-hidden="true" hidden>
+        <span class="skeleton"></span><span class="skeleton"></span><span class="skeleton short"></span>
+      </div>
+
+      <div id="planEmptyWrap" hidden>
+        <p class="empty-text">No plan yet. Give it your energy and the hours you have; it builds 2–6 concrete steps from your nearest deadlines.</p>
+        <button class="btn btn-primary btn-block" type="button" id="planMyDayBtn">Plan my day</button>
+      </div>
+
+      <div id="planFormWrap" hidden>
+        <div class="grid-2">
+          <div class="field">
             <label for="planEnergy">Energy right now</label>
             <select id="planEnergy">
               <option value="very low">Very low</option>
@@ -422,52 +94,124 @@
               <option value="high">High</option>
             </select>
           </div>
-          <div>
+          <div class="field">
             <label for="planHours">Hours available</label>
-            <input id="planHours" type="number" min="1" max="16" value="4">
+            <input id="planHours" type="number" inputmode="numeric" min="1" max="16" value="4">
           </div>
         </div>
-        <button class="primary" id="planGenerateBtn">Make the plan</button>
-        <div id="planStatus" class="modeDesc" style="margin:10px 0 0;"></div>
-      </div>
-      <div id="planListWrap" style="display:none;">
-        <div id="planList"></div>
-        <div class="planRowSmall">
-          <input id="planAddInput" placeholder="Add something…">
-          <button class="ghost" id="planAddBtn">Add</button>
+        <div class="row">
+          <button class="btn btn-primary" type="button" id="planGenerateBtn"><span class="btn-label">Make the plan</span></button>
+          <button class="btn btn-quiet" type="button" id="planCancelBtn">Cancel</button>
         </div>
-        <div class="planRowSmall">
-          <button class="ghost" id="planToFocusBtn" style="flex:1;">Send remaining to Focus</button>
-          <button class="ghost" id="planRedoBtn">Replan</button>
-        </div>
-        <div id="planListStatus" class="modeDesc" style="margin:8px 0 0;"></div>
+        <p id="planStatus" class="status" role="status" aria-live="polite"></p>
       </div>
-    </div>
-    <nav class="menu">
-      <button class="menuItem" data-open="ai:breakdown">Break it down</button>
-      <button class="menuItem" data-open="focus">Focus</button>
-      <button class="menuItem" data-open="timer">Timer</button>
-      <button class="menuItem" data-open="remind">Remind me</button>
-      <button class="menuItem" data-open="braindump">Brain dump</button>
-    </nav>
-    <div class="subMenu">
-      <button data-open="ai:ask">Ask</button><span class="dot">·</span>
-      <button data-open="settings">Settings</button>
-    </div>
-    <p id="dailyWisdom"></p>
-  </div>
 
-  <div class="view" id="view-ai">
-    <div class="toolHeader">
-      <button class="backBtn" aria-label="Back">←</button>
-      <span class="toolTitle" id="aiTitle">Break it down</span>
+      <div id="planListWrap" hidden>
+        <ul id="planList" class="plan-list"></ul>
+        <form class="inline-add" id="planAddForm" autocomplete="off">
+          <label class="sr-only" for="planAddInput">Add a step</label>
+          <input id="planAddInput" placeholder="Add a step…">
+          <button class="btn btn-icon btn-secondary" type="submit" id="planAddBtn" aria-label="Add step"><svg class="icon"><use href="#i-plus"/></svg></button>
+        </form>
+        <div class="row">
+          <button class="btn btn-secondary grow" type="button" id="planToFocusBtn">Send remaining to Focus</button>
+          <button class="btn btn-quiet" type="button" id="planRedoBtn">Replan</button>
+        </div>
+        <p id="planListStatus" class="status" role="status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <figure class="wisdom">
+      <blockquote id="dailyWisdom"></blockquote>
+    </figure>
+  </section>
+
+  <!-- ============ FOCUS ============ -->
+  <section class="view" id="view-focus" aria-labelledby="focusTitle">
+    <header class="page-head compact">
+      <h1 id="focusTitle" tabindex="-1">Focus</h1>
+      <p class="lede">You only ever see the next task.</p>
+    </header>
+    <div id="focusEditView" class="card">
+      <div class="field">
+        <label for="focusInput">Tasks, one per line</label>
+        <textarea id="focusInput" rows="7" placeholder="Open the report doc&#10;Write the intro paragraph&#10;Email Sarah the draft"></textarea>
+      </div>
+      <button class="btn btn-primary btn-block" type="button" id="focusStartBtn">Start focus</button>
     </div>
-    <div class="modeDesc" id="modeDesc"></div>
-    <details class="ctx" id="checkinWrap">
-      <summary>add context (energy, mood, deadline)</summary>
-      <div id="checkinBlock" class="checkins">
-        <div>
-          <label for="energy">Energy right now</label>
+    <div id="focusTaskView" class="focus-stage" hidden>
+      <div class="focus-geo" data-geo="flower" aria-hidden="true"></div>
+      <p id="focusProgress" class="eyebrow"></p>
+      <p class="task-text" id="focusCurrentTask" aria-live="polite"></p>
+      <div class="row center">
+        <button class="btn btn-primary btn-lg" type="button" id="focusDoneBtn"><svg class="icon"><use href="#i-check"/></svg><span>Done</span></button>
+        <button class="btn btn-quiet" type="button" id="focusEditBtn">Edit list</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ TIMER ============ -->
+  <section class="view" id="view-timer" aria-labelledby="timerTitle">
+    <header class="page-head compact">
+      <h1 id="timerTitle" tabindex="-1">Timer</h1>
+      <p class="lede">Work, then rest. A finished work block counts as a win.</p>
+    </header>
+    <div class="timer-dial" role="timer" aria-live="off">
+      <svg viewBox="0 0 220 220" aria-hidden="true">
+        <g class="dial-geo" data-geo-svg="seed"></g>
+        <circle class="dial-track" cx="110" cy="110" r="100"/>
+        <circle class="dial-progress" id="timerRing" cx="110" cy="110" r="100" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100"/>
+      </svg>
+      <div class="dial-center">
+        <div id="timerPhase" class="eyebrow">Ready</div>
+        <div id="timerDisplay" class="dial-time">25:00</div>
+      </div>
+    </div>
+    <div class="row center">
+      <button class="btn btn-primary btn-lg" type="button" id="timerStartBtn">Start</button>
+      <button class="btn btn-secondary btn-lg" type="button" id="timerStopBtn" hidden>Stop session</button>
+    </div>
+    <div class="card timer-settings">
+      <div class="grid-2">
+        <div class="field">
+          <label for="workMinutes">Work minutes</label>
+          <input id="workMinutes" type="number" inputmode="numeric" min="1" max="120" value="25">
+        </div>
+        <div class="field">
+          <label for="breakMinutes">Break minutes</label>
+          <input id="breakMinutes" type="number" inputmode="numeric" min="1" max="60" value="5">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ MORE ============ -->
+  <section class="view" id="view-more" aria-labelledby="moreTitle">
+    <header class="page-head compact">
+      <h1 id="moreTitle" tabindex="-1">Tools</h1>
+      <p class="lede">Everything else, one tap away.</p>
+    </header>
+    <ul class="tool-list">
+      <li><button class="tool-row" type="button" data-open="ai:breakdown"><span class="tool-icon"><svg class="icon"><use href="#i-split"/></svg></span><span class="tool-text"><strong>Break it down</strong><small>Stuck on a task? Get one concrete first move.</small></span><svg class="icon chevron"><use href="#i-chevron"/></svg></button></li>
+      <li><button class="tool-row" type="button" data-open="ai:ask"><span class="tool-icon"><svg class="icon"><use href="#i-chat"/></svg></span><span class="tool-text"><strong>Ask</strong><small>Check a message, a decision, or what happened.</small></span><svg class="icon chevron"><use href="#i-chevron"/></svg></button></li>
+      <li><button class="tool-row" type="button" data-open="remind"><span class="tool-icon"><svg class="icon"><use href="#i-bell"/></svg></span><span class="tool-text"><strong>Remind me</strong><small>Push reminders and a daily nudge.</small></span><svg class="icon chevron"><use href="#i-chevron"/></svg></button></li>
+      <li><button class="tool-row" type="button" data-open="braindump"><span class="tool-icon"><svg class="icon"><use href="#i-wave"/></svg></span><span class="tool-text"><strong>Brain dump</strong><small>Empty your head, then breathe.</small></span><svg class="icon chevron"><use href="#i-chevron"/></svg></button></li>
+      <li><button class="tool-row" type="button" data-open="settings"><span class="tool-icon"><svg class="icon"><use href="#i-sliders"/></svg></span><span class="tool-text"><strong>Settings</strong><small>Deadlines, PIN, what it knows about you.</small></span><svg class="icon chevron"><use href="#i-chevron"/></svg></button></li>
+    </ul>
+  </section>
+
+  <!-- ============ AI (Break it down / Ask) ============ -->
+  <section class="view" id="view-ai" aria-labelledby="aiTitle">
+    <header class="sub-head">
+      <button class="btn btn-icon btn-quiet backBtn" type="button" aria-label="Back to tools"><svg class="icon"><use href="#i-back"/></svg></button>
+      <h1 id="aiTitle" tabindex="-1">Break it down</h1>
+    </header>
+    <p class="lede" id="modeDesc"></p>
+    <details class="disclosure" id="checkinWrap">
+      <summary>Add context: energy, mood, deadline</summary>
+      <div id="checkinBlock" class="grid-3">
+        <div class="field">
+          <label for="energy">Energy</label>
           <select id="energy">
             <option value="very low">Very low</option>
             <option value="low" selected>Low</option>
@@ -476,7 +220,7 @@
             <option value="high">High</option>
           </select>
         </div>
-        <div>
+        <div class="field">
           <label for="mood">Mood</label>
           <select id="mood">
             <option value="overwhelmed">Overwhelmed</option>
@@ -486,114 +230,71 @@
             <option value="motivated">Motivated</option>
           </select>
         </div>
-        <div>
-          <label for="deadline">Deadline (optional)</label>
-          <input id="deadline" placeholder="e.g. today 5pm, none">
+        <div class="field">
+          <label for="deadline">Deadline</label>
+          <input id="deadline" placeholder="e.g. today 5pm">
         </div>
       </div>
     </details>
     <div class="field">
       <label id="inputLabel" for="userInput">What's the task?</label>
-      <textarea id="userInput" style="min-height:100px;" placeholder="Type here..."></textarea>
+      <textarea id="userInput" rows="4" placeholder="Type here…"></textarea>
     </div>
-    <div class="goRow">
-      <button class="primary" id="submitBtn">Go</button>
-      <button class="iconBtn" id="micBtn" aria-label="Speak instead of typing">🎙</button>
-      <button class="iconBtn" id="speakToggleBtn" aria-label="Speak replies aloud">🔊</button>
+    <div class="row">
+      <button class="btn btn-primary grow" type="button" id="submitBtn"><span class="btn-label">Go</span></button>
+      <button class="btn btn-icon btn-secondary" type="button" id="micBtn" aria-label="Speak instead of typing" aria-pressed="false"><svg class="icon"><use href="#i-mic"/></svg></button>
+      <button class="btn btn-icon btn-secondary" type="button" id="speakToggleBtn" aria-label="Read replies aloud" aria-pressed="false"><svg class="icon"><use href="#i-volume"/></svg></button>
     </div>
-    <span id="status"></span>
-    <div id="outputWrap">
+    <p id="status" class="status" role="status" aria-live="polite"></p>
+    <div id="outputWrap" aria-live="polite">
       <div id="firstStepBox"></div>
-      <div id="output"></div>
-      <button class="ghost" id="replayBtn" style="display:none; margin-top:12px;">🔊 Read it again</button>
+      <div id="output" class="output"></div>
+      <button class="btn btn-quiet" type="button" id="replayBtn" hidden><svg class="icon"><use href="#i-volume"/></svg><span>Read it again</span></button>
     </div>
-  </div>
+  </section>
 
-  <div class="view" id="view-focus">
-    <div class="toolHeader">
-      <button class="backBtn" aria-label="Back">←</button>
-      <span class="toolTitle">Focus</span>
-    </div>
-    <div id="focusEditView">
-      <div class="modeDesc">Enter your tasks, one per line. You'll only ever see the next one.</div>
-      <div class="field">
-        <textarea id="focusInput" style="min-height:160px;" placeholder="e.g.&#10;Open the report doc&#10;Write the intro paragraph&#10;Email Sarah the draft"></textarea>
-      </div>
-      <button class="primary" id="focusStartBtn">Start focus</button>
-    </div>
-    <div id="focusTaskView" style="display:none;">
-      <div id="focusProgress"></div>
-      <div class="taskText" id="focusCurrentTask"></div>
-      <div class="focusBtnRow">
-        <button class="primary" id="focusDoneBtn">Done</button>
-        <button class="ghost" id="focusEditBtn">Edit list</button>
-      </div>
-    </div>
-  </div>
+  <!-- ============ REMIND ============ -->
+  <section class="view" id="view-remind" aria-labelledby="remindTitle">
+    <header class="sub-head">
+      <button class="btn btn-icon btn-quiet backBtn" type="button" aria-label="Back to tools"><svg class="icon"><use href="#i-back"/></svg></button>
+      <h1 id="remindTitle" tabindex="-1">Remind me</h1>
+    </header>
 
-  <div class="view" id="view-timer">
-    <div class="toolHeader">
-      <button class="backBtn" aria-label="Back">←</button>
-      <span class="toolTitle">Timer</span>
-    </div>
-    <div class="timerSettings">
-      <div class="field">
-        <label for="workMinutes">Work minutes</label>
-        <input id="workMinutes" type="number" min="1" max="120" value="25">
-      </div>
-      <div class="field">
-        <label for="breakMinutes">Break minutes</label>
-        <input id="breakMinutes" type="number" min="1" max="60" value="5">
-      </div>
-    </div>
-    <div class="ringWrap">
-      <div id="timerRing"></div>
-      <div class="timeCenter">
-        <div id="timerPhase">Ready</div>
-        <div id="timerDisplay">25:00</div>
-      </div>
-    </div>
-    <div class="timerBtnRow">
-      <button class="primary" id="timerStartBtn">Start</button>
-      <button class="ghost" id="timerStopBtn" style="display:none;">Stop session</button>
-    </div>
-  </div>
+    <section class="card" aria-labelledby="notifTitle">
+      <div class="card-head"><h2 id="notifTitle">This device</h2></div>
+      <button class="btn btn-secondary btn-block" type="button" id="enableNotifsBtn">Enable notifications on this device</button>
+      <p id="notifStatus" class="status" role="status" aria-live="polite"></p>
+    </section>
 
-  <div class="view" id="view-remind">
-    <div class="toolHeader">
-      <button class="backBtn" aria-label="Back">←</button>
-      <span class="toolTitle">Remind me</span>
-    </div>
-    <div id="notifSetup">
-      <button class="ghost" id="enableNotifsBtn" style="width:100%;">Enable notifications on this device</button>
-      <div id="notifStatus" class="modeDesc" style="margin:10px 0 0; word-break:break-word;"></div>
-    </div>
-    <div class="settingsBlock" style="margin-top:20px;">
-      <div class="modeDesc" style="margin-bottom:10px;">Daily nudge — hits your phone at the same time every day, whether or not you've opened this app. This is the one setting worth filling in.</div>
-      <div class="checkins" style="grid-template-columns: 1fr 1fr; margin: 0 0 14px;">
-        <div>
+    <section class="card" aria-labelledby="nudgeTitle">
+      <div class="card-head"><h2 id="nudgeTitle">Daily nudge</h2></div>
+      <p class="hint">Hits your phone at the same time every day, whether or not you open the app. The one setting worth filling in.</p>
+      <div class="grid-2">
+        <div class="field">
           <label for="nudgeTime">Time</label>
           <input id="nudgeTime" type="time" value="18:00">
         </div>
-        <div>
+        <div class="field">
           <label for="nudgeText">Say what</label>
           <input id="nudgeText" placeholder="Start studying" value="Start studying">
         </div>
       </div>
-      <button class="primary" id="nudgeSetBtn" style="width:100%;">Set daily nudge</button>
-      <div id="nudgeStatus" class="modeDesc" style="margin:10px 0 0; word-break:break-word;"></div>
-    </div>
-    <div style="margin-top:20px;">
+      <button class="btn btn-primary btn-block" type="button" id="nudgeSetBtn"><span class="btn-label">Set daily nudge</span></button>
+      <p id="nudgeStatus" class="status" role="status" aria-live="polite"></p>
+    </section>
+
+    <section class="card" aria-labelledby="oneoffTitle">
+      <div class="card-head"><h2 id="oneoffTitle">One-off reminder</h2></div>
       <div class="field">
-        <label for="remindText">One-off reminder</label>
-        <input id="remindText" placeholder="e.g. take meds, submit the form, call the doctor">
+        <label for="remindText">What</label>
+        <input id="remindText" placeholder="Take meds, submit the form, call the doctor">
       </div>
-      <div class="checkins" style="grid-template-columns: 1fr 1fr; margin: 0 0 14px;">
-        <div>
+      <div class="grid-2">
+        <div class="field">
           <label for="remindWhen">When</label>
           <input id="remindWhen" type="datetime-local">
         </div>
-        <div>
+        <div class="field">
           <label for="remindRepeat">Repeat</label>
           <select id="remindRepeat">
             <option value="none">Once</option>
@@ -601,1204 +302,108 @@
           </select>
         </div>
       </div>
-      <button class="primary" id="remindAddBtn">Add reminder</button>
-      <div id="remindStatus" class="modeDesc" style="margin:10px 0 0; word-break:break-word;"></div>
-    </div>
-    <div id="remindList" style="margin-top:14px;"></div>
-  </div>
+      <button class="btn btn-primary btn-block" type="button" id="remindAddBtn"><span class="btn-label">Add reminder</span></button>
+      <p id="remindStatus" class="status" role="status" aria-live="polite"></p>
+    </section>
 
-  <div class="view" id="view-braindump">
-    <div class="toolHeader">
-      <button class="backBtn" aria-label="Back">←</button>
-      <span class="toolTitle">Brain dump</span>
-    </div>
+    <section aria-labelledby="upcomingTitle">
+      <h2 class="section-title" id="upcomingTitle">Upcoming</h2>
+      <div id="remindList" class="list"></div>
+    </section>
+  </section>
+
+  <!-- ============ BRAIN DUMP ============ -->
+  <section class="view" id="view-braindump" aria-labelledby="dumpTitle">
+    <header class="sub-head">
+      <button class="btn btn-icon btn-quiet backBtn" type="button" aria-label="Back to tools"><svg class="icon"><use href="#i-back"/></svg></button>
+      <h1 id="dumpTitle" tabindex="-1">Brain dump</h1>
+    </header>
     <div class="field">
-      <textarea id="brainDumpInput" placeholder="Just type. No structure needed."></textarea>
+      <label class="sr-only" for="brainDumpInput">Brain dump</label>
+      <textarea id="brainDumpInput" rows="9" placeholder="Just type. No structure needed. It saves as you go."></textarea>
     </div>
-    <button class="ghost" id="calmDownBtn" style="width:100%;">Start calm-down</button>
-    <div id="breathBlock" style="display:none;">
-      <div id="breathCircle"></div>
-      <div id="breathLabel">Breathe in</div>
-      <div id="breathCount">Cycle 1</div>
-      <button class="ghost" id="stopBreathBtn">Stop</button>
+    <button class="btn btn-secondary btn-block" type="button" id="calmDownBtn">Start calm-down</button>
+    <div id="breathBlock" class="breath" data-phase="out" hidden>
+      <div id="breathCircle" class="breath-geo" data-geo="seed-breath" aria-hidden="true"></div>
+      <p id="breathLabel" class="breath-label" aria-live="polite">Breathe in</p>
+      <p id="breathCount" class="hint center"></p>
+      <button class="btn btn-quiet" type="button" id="stopBreathBtn">Stop</button>
     </div>
-  </div>
+  </section>
 
-  <div class="view" id="view-settings">
-    <div class="toolHeader">
-      <button class="backBtn" aria-label="Back">←</button>
-      <span class="toolTitle">Settings</span>
-    </div>
-    <div class="settingsBlock">
-      <label>Deadlines (soonest one shows on home)</label>
-      <div class="checkins" style="grid-template-columns: 1fr 1fr; margin: 8px 0 10px;">
-        <div>
+  <!-- ============ SETTINGS ============ -->
+  <section class="view" id="view-settings" aria-labelledby="settingsTitle">
+    <header class="sub-head">
+      <button class="btn btn-icon btn-quiet backBtn" type="button" aria-label="Back to tools"><svg class="icon"><use href="#i-back"/></svg></button>
+      <h1 id="settingsTitle" tabindex="-1">Settings</h1>
+    </header>
+
+    <section class="card" aria-labelledby="pinTitle">
+      <div class="card-head"><h2 id="pinTitle">Access PIN</h2></div>
+      <div class="field">
+        <label for="pinInput">PIN (the same one set in Vercel)</label>
+        <input id="pinInput" type="password" autocomplete="current-password">
+      </div>
+      <button class="btn btn-secondary btn-block" type="button" id="testConnBtn"><span class="btn-label">Test connection</span></button>
+      <p id="testConnResult" class="status" role="status" aria-live="polite"></p>
+    </section>
+
+    <section class="card" aria-labelledby="deadlinesTitle">
+      <div class="card-head"><h2 id="deadlinesTitle">Deadlines</h2><span class="meta">soonest shows on Today</span></div>
+      <div class="grid-2">
+        <div class="field">
           <label for="deadlineLabel">What</label>
-          <input id="deadlineLabel" placeholder="e.g. Analysis 2 exam">
+          <input id="deadlineLabel" placeholder="e.g. Thesis submission">
         </div>
-        <div>
+        <div class="field">
           <label for="deadlineDate">When</label>
           <input id="deadlineDate" type="datetime-local">
         </div>
       </div>
-      <button class="ghost" id="deadlineAddBtn" style="width:100%;">Add deadline</button>
-      <button class="ghost" id="ovguQuickAddBtn" style="width:100%; margin-top:8px;">Add my OVGU exams + deadlines (6)</button>
-      <div id="deadlineList" style="margin-top:12px;"></div>
-    </div>
-    <div class="settingsBlock">
-      <label for="aboutMe">About me (always remembered)</label>
-      <textarea id="aboutMe" placeholder="e.g. I stall out after long breaks. Mornings are hard. I overcommit and then panic near deadlines."></textarea>
-    </div>
-    <div class="settingsBlock">
+      <button class="btn btn-secondary btn-block" type="button" id="deadlineAddBtn"><span class="btn-label">Add deadline</span></button>
+      <div id="deadlineList" class="list"></div>
+    </section>
+
+    <section class="card" aria-labelledby="aboutTitle">
+      <div class="card-head"><h2 id="aboutTitle">About me</h2><span class="meta">always remembered</span></div>
       <div class="field">
-        <label for="pinInput">Access PIN</label>
-        <input id="pinInput" type="password" placeholder="Same PIN set in Vercel">
+        <label class="sr-only" for="aboutMe">About me</label>
+        <textarea id="aboutMe" rows="4" placeholder="I stall out after long breaks. Mornings are hard. I overcommit and then panic near deadlines."></textarea>
       </div>
-      <button class="ghost" id="testConnBtn" style="width:100%;">Test connection</button>
-      <div id="testConnResult" class="modeDesc" style="margin:10px 0 0; word-break:break-word;"></div>
-    </div>
-    <div class="settingsBlock">
-      <label>Recent history</label>
-      <div id="history"></div>
-      <button class="ghost" id="clearHistory" style="margin-top:10px;">Clear history</button>
-    </div>
-  </div>
+    </section>
 
+    <section class="card" aria-labelledby="histTitle">
+      <div class="card-head"><h2 id="histTitle">Recent history</h2></div>
+      <div id="history" class="list"></div>
+      <button class="btn btn-quiet" type="button" id="clearHistory">Clear history</button>
+    </section>
+  </section>
+
+</main>
+
+<nav class="tabbar" aria-label="Main">
+  <button class="tab" type="button" data-tab="home"><svg class="icon"><use href="#i-sun"/></svg><span>Today</span></button>
+  <button class="tab" type="button" data-tab="focus"><svg class="icon"><use href="#i-target"/></svg><span>Focus</span></button>
+  <button class="tab" type="button" data-tab="timer"><svg class="icon"><use href="#i-timer"/></svg><span>Timer</span></button>
+  <button class="tab" type="button" data-tab="more"><svg class="icon"><use href="#i-more"/></svg><span>Tools</span></button>
+</nav>
+
+<div id="burstOverlay" class="burst" aria-hidden="true">
+  <div id="burstRing" class="burst-geo" data-geo="flower-draw"></div>
+  <p id="burstText" class="burst-text"></p>
 </div>
 
-<div id="burstOverlay" aria-hidden="true">
-  <div id="burstRing"></div>
-  <div id="burstText"></div>
-</div>
-
-<div id="pathOverlay">
+<dialog id="pathOverlay" class="sheet" aria-labelledby="pathTitle">
   <div id="pathCard">
-    <h2>The path</h2>
-    <div class="sub">The Ten Ox-Herding Pictures — the Zen map of taming a wandering mind. The ox is your attention.</div>
-    <div id="pathStages"></div>
-    <button class="ghost" id="pathCloseBtn" style="width:100%; margin-top:12px;">Close</button>
+    <h2 id="pathTitle">The path</h2>
+    <p class="hint">The Ten Ox-Herding Pictures, the Zen map of taming a wandering mind. The ox is your attention.</p>
+    <ol id="pathStages" class="path-list"></ol>
+    <button class="btn btn-secondary btn-block" type="button" id="pathCloseBtn">Close</button>
   </div>
-</div>
+</dialog>
 
-<script>
-const modeConfig = {
-  breakdown: {
-    title: "Break it down",
-    label: "What's the task?",
-    placeholder: "e.g. clean the kitchen, start the report, reply to that email I've been avoiding",
-    desc: "Type the thing you're stuck on. You get one concrete trigger to act on, not a to-do list.",
-    showCheckin: true,
-    systemExtra: `The user is stuck starting a task. Research on ADHD task initiation (Gawrilow & Gollwitzer) shows "implementation intentions" — concrete if-then trigger plans — measurably outperform generic to-do lists at getting action started. Your job is to produce ONE of these, not a checklist.
+<div id="toasts" class="toasts" role="status" aria-live="polite"></div>
 
-Start your response with a single line in exactly this form:
-"FIRST: If <a concrete, checkable trigger — a specific time, location, or thing that just happened>, then I will <one tiny physical action taking under 2 minutes, phrased as a literal physical movement, e.g. "open the document and type one sentence" not "start the report">."
-
-Then a blank line, then at most 2-3 further if-then pairs for the steps after that (same "If X, then I will Y" format, still small and concrete) — never a generic numbered list of vague steps. Size the trigger and action to their stated energy and mood: low energy or overwhelmed mood means a smaller action and a more immediate/easy-to-satisfy trigger. No commentary, no encouragement filler, no summary at the end.`
-  },
-  ask: {
-    title: "Ask",
-    label: "What's on your mind?",
-    placeholder: "Paste a message, describe a decision, or tell me what happened...",
-    desc: "Paste something before sending it, describe a decision, or tell it what happened. One direct, honest response.",
-    showCheckin: false,
-    systemExtra: `The user will send you one of: (a) a message they're about to send — tell them honestly and briefly how it reads (tone, clarity, risk of being misread) in 2-4 sentences, offer one rewrite only if it would genuinely help; (b) something they did or didn't accomplish — respond with honest, warm, non-judgmental encouragement in 2-5 sentences, don't minimize the difficulty, don't lecture, don't enable avoidance either; (c) a decision they're weighing — give a direct, honest opinion on whether it's reasonable in 2-4 sentences plus at most one real consideration. Infer which of these fits from what they send and respond accordingly. Do not be sycophantic. Do not pad the response. Do not ask which mode they meant.`
-  }
-};
-
-let currentMode = "breakdown";
-const $ = (id) => document.getElementById(id);
-const hasNotif = "Notification" in window;
-
-const starfield = $("starfield");
-for (let i = 0; i < 45; i++) {
-  const s = document.createElement("div");
-  s.className = "star";
-  const size = Math.random() * 1.8 + 0.6;
-  s.style.width = s.style.height = size + "px";
-  s.style.left = Math.random() * 100 + "%";
-  s.style.top = Math.random() * 100 + "%";
-  s.style.animationDelay = (Math.random() * 5) + "s";
-  s.style.animationDuration = (2.5 + Math.random() * 4) + "s";
-  starfield.appendChild(s);
-}
-
-function loadState() {
-  try { return JSON.parse(localStorage.getItem("adhdAssistant") || "{}"); }
-  catch { return {}; }
-}
-function saveState(state) {
-  localStorage.setItem("adhdAssistant", JSON.stringify(state));
-}
-let state = Object.assign({
-  aboutMe: "",
-  history: [],
-  focusQueue: [],
-  focusRunning: false,
-  timerWork: 25,
-  timerBreak: 5,
-  brainDump: "",
-  pin: ""
-}, loadState());
-delete state.examDate;
-delete state.deadlines;
-
-if (!state.wins || typeof state.wins.total !== "number") state.wins = { total: 0, byDay: {} };
-if (typeof state.voiceOut !== "boolean") state.voiceOut = false;
-(function pruneWins() {
-  const cutoff = Date.now() - 14 * 86400000;
-  for (const day of Object.keys(state.wins.byDay)) {
-    if (new Date(day).getTime() < cutoff) delete state.wins.byDay[day];
-  }
-})();
-
-const COMPLETION_LINES = [
-  "When walking, walk. When eating, eat. — Zen proverb",
-  "A journey of a thousand miles begins with a single step. — Laozi",
-  "The obstacle is the path. — Zen proverb",
-  "How you do anything is how you do everything. — Zen saying",
-  "Small deeds done are better than great deeds planned. — Chinese proverb",
-  "Fall seven times, stand up eight. — Japanese proverb",
-  "The wise adapt themselves like water to the shape of the vessel. — Chinese proverb",
-  "Move and the way will open. — Zen proverb",
-  "One moment of complete attention is one moment of freedom.",
-  "Done is a form of stillness.",
-  "You did the thing in front of you. That is the whole practice.",
-  "Chop wood, carry water. — Zen saying",
-  "The quieter the mind, the louder the progress.",
-  "Even the longest river reaches the sea by flowing, not by rushing.",
-  "Each step is the destination. — Zen saying",
-  "Nothing is left undone when the doing is simple. — after Laozi",
-  "Attention is the rarest and purest form of generosity. — Simone Weil",
-  "The mind that returns is stronger than the mind that never wandered.",
-  "First the ox resists. Then it walks with you.",
-  "What you finish, finishes something in you.",
-  "Water is soft, stone is hard — yet drop by drop the stone is carved.",
-  "This moment was used well.",
-  "The bamboo bends and does not break.",
-  "One task, wholly done, outweighs ten half-held.",
-  "Begin again as many times as needed — the path doesn't count restarts."
-];
-const DEEP_LINES = [
-  "Nature does not hurry, yet everything is accomplished. — Laozi, Tao Te Ching",
-  "You have power over your mind — not outside events. Realize this, and you will find strength. — Marcus Aurelius",
-  "The mind is everything. What you think you become. — attributed to the Buddha",
-  "Do your work, then step back. The only path to serenity. — Laozi, Tao Te Ching",
-  "It is not that we have a short time to live, but that we waste a lot of it. — Seneca",
-  "You are only entitled to the action, never to its fruits. Act for the action's sake. — Bhagavad Gita",
-  "Before enlightenment: chop wood, carry water. After enlightenment: chop wood, carry water. — Zen proverb",
-  "When you realize nothing is lacking, the whole world belongs to you. — Laozi",
-  "Confine yourself to the present. — Marcus Aurelius",
-  "The ox is never lost. Only the herder forgets where to look. — Ox-herding tradition"
-];
-const DAILY_WISDOM = [
-  "Nature does not hurry, yet everything is accomplished. — Laozi",
-  "You have power over your mind — not outside events. — Marcus Aurelius",
-  "The best time to plant a tree was twenty years ago. The second best time is now. — Chinese proverb",
-  "Do the difficult things while they are easy. — Laozi",
-  "A jug fills drop by drop. — attributed to the Buddha",
-  "We suffer more often in imagination than in reality. — Seneca",
-  "Set your heart upon your work, but never on its reward. — Bhagavad Gita",
-  "When walking, walk. When eating, eat. — Zen proverb",
-  "Muddy water, let stand, becomes clear. — Laozi",
-  "No man steps in the same river twice. — Heraclitus",
-  "The obstacle is the path. — Zen proverb",
-  "He who conquers himself is the mightiest warrior. — Confucius",
-  "Begin at once to live, and count each separate day as a separate life. — Seneca",
-  "Your mind is a garden; your thoughts are the seeds. — proverb",
-  "To the mind that is still, the whole universe surrenders. — Zhuangzi",
-  "It does not matter how slowly you go as long as you do not stop. — Confucius",
-  "The wound is the place where the light enters you. — Rumi",
-  "Man conquers the world by conquering himself. — Zeno of Citium",
-  "Sitting quietly, doing nothing, spring comes, and the grass grows by itself. — Bashō",
-  "Waste no more time arguing what a good man should be. Be one. — Marcus Aurelius",
-  "Tension is who you think you should be. Relaxation is who you are. — Chinese proverb",
-  "One who is patient glows with an inner radiance. — Dhammapada",
-  "If you are depressed you live in the past, if anxious the future, at peace — the present. — after Laozi",
-  "Better than a thousand hollow words is one word that brings peace. — Dhammapada",
-  "The gem cannot be polished without friction, nor man perfected without trials. — Chinese proverb",
-  "Knowing others is intelligence; knowing yourself is true wisdom. — Laozi",
-  "Luck is what happens when preparation meets opportunity. — Seneca",
-  "Wherever you go, go with all your heart. — Confucius",
-  "Silence is a source of great strength. — Laozi",
-  "Every morning we are born again. What we do today is what matters most. — Buddhist saying",
-  "Perform your duty, for action is superior to inaction. — Bhagavad Gita",
-  "First say to yourself what you would be; then do what you have to do. — Epictetus",
-  "The moon does not fight. It attacks no one. Yet no one can resist it. — Deng Ming-Dao",
-  "Only the hand that erases can write the true thing. — Meister Eckhart",
-  "A good traveler has no fixed plans and is not intent on arriving. — Laozi",
-  "Drop by drop is the water pot filled. — Dhammapada",
-  "You could leave life right now. Let that determine what you do and say. — Marcus Aurelius",
-  "Empty your cup so that it may be filled. — Zen saying",
-  "The softest things in the world overcome the hardest. — Laozi",
-  "Peace comes from within. Do not seek it without. — Buddhist saying"
-];
-const STILLNESS_LINES = [
-  "The quieter you become, the more you are able to hear. — Rumi",
-  "Breath is the bridge between body and mind. — Thich Nhat Hanh",
-  "Muddy water, let stand, becomes clear. — Laozi",
-  "You are the sky. Everything else is just the weather. — Pema Chödrön",
-  "Sitting quietly, the storm passes through and does not stay.",
-  "Stillness is what remains when you stop adding."
-];
-const OX_STAGES = [
-  { at: 0,   name: "Searching for the Ox",   meaning: "You know your attention wanders. Looking for it is the first act of the path." },
-  { at: 5,   name: "Seeing the Tracks",      meaning: "Patterns emerge — you're starting to notice when and where focus slips away." },
-  { at: 15,  name: "Glimpsing the Ox",       meaning: "Moments of real focus appear. Brief, but undeniably yours." },
-  { at: 30,  name: "Catching the Ox",        meaning: "You can summon focus deliberately now — it still fights the rope." },
-  { at: 50,  name: "Taming the Ox",          meaning: "Structure and practice are making focus less of a battle." },
-  { at: 80,  name: "Riding the Ox Home",     meaning: "Focus carries you now. The struggle is quieter than it was." },
-  { at: 120, name: "The Ox Forgotten",       meaning: "You work without thinking about working. The tools disappear into the doing." },
-  { at: 180, name: "Both Forgotten",         meaning: "No ox, no herder — just the task and you, indistinguishable." },
-  { at: 250, name: "Returning to the Source",meaning: "Effort looks effortless. What was practice is now nature." },
-  { at: 350, name: "In the World",           meaning: "You move through ordinary life carrying an extraordinary calm. The path continues." }
-];
-
-function todayKey() {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-}
-function currentStage() {
-  let idx = 0;
-  for (let i = 0; i < OX_STAGES.length; i++) if (state.wins.total >= OX_STAGES[i].at) idx = i;
-  return idx;
-}
-function renderWinsLine() {
-  const todayWins = state.wins.byDay[todayKey()] || 0;
-  const idx = currentStage();
-  $("winsLine").innerHTML = `<span class="star">✦</span> ${todayWins} today · Stage ${idx + 1}: ${OX_STAGES[idx].name}`;
-}
-let burstTimeout = null;
-function showBurst() {
-  const deep = Math.random() < 0.2;
-  const pool = deep ? DEEP_LINES : COMPLETION_LINES;
-  const line = pool[Math.floor(Math.random() * pool.length)];
-  const overlay = $("burstOverlay");
-  overlay.classList.remove("show", "deep");
-  void overlay.offsetWidth;
-  $("burstText").textContent = line;
-  overlay.classList.add("show");
-  if (deep) overlay.classList.add("deep");
-  clearTimeout(burstTimeout);
-  burstTimeout = setTimeout(() => overlay.classList.remove("show", "deep"), deep ? 3400 : 2300);
-}
-function registerWin(source) {
-  const key = todayKey();
-  state.wins.total++;
-  state.wins.byDay[key] = (state.wins.byDay[key] || 0) + 1;
-  saveState(state);
-  renderWinsLine();
-  showBurst();
-}
-$("winsLine").addEventListener("click", () => {
-  const el = $("pathStages");
-  el.innerHTML = "";
-  const cur = currentStage();
-  OX_STAGES.forEach((s, i) => {
-    const div = document.createElement("div");
-    div.className = "pathStage" + (i === cur ? " current" : i < cur ? " reached" : "");
-    div.innerHTML = `<div>${i + 1}. ${s.name}${i < cur ? " ✓" : ""}</div><div class="meaning">${s.meaning}</div>`;
-    el.appendChild(div);
-  });
-  $("pathOverlay").classList.add("show");
-});
-$("pathCloseBtn").addEventListener("click", () => $("pathOverlay").classList.remove("show"));
-$("pathOverlay").addEventListener("click", (e) => { if (e.target === $("pathOverlay")) $("pathOverlay").classList.remove("show"); });
-
-function renderDailyWisdom() {
-  const daysSinceEpoch = Math.floor(Date.now() / 86400000);
-  $("dailyWisdom").textContent = DAILY_WISDOM[daysSinceEpoch % DAILY_WISDOM.length];
-}
-
-let dayplanCache = null;
-
-async function dayplanApi(body) {
-  const res = await fetch("/api/dayplan", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(Object.assign({ pin: state.pin }, body))
-  });
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
-  return data;
-}
-
-function renderTodayBlock() {
-  const hasPlan = dayplanCache && dayplanCache.date === todayKey() && dayplanCache.items.length;
-  $("planEmptyWrap").style.display = hasPlan ? "none" : "block";
-  $("planFormWrap").style.display = "none";
-  $("planListWrap").style.display = hasPlan ? "block" : "none";
-  if (!hasPlan) return;
-  const list = $("planList");
-  list.innerHTML = "";
-  dayplanCache.items.forEach(it => {
-    const div = document.createElement("div");
-    div.className = "planItem" + (it.done ? " done" : "");
-    div.innerHTML = `<div class="planCheck">✓</div><div class="planText">${escapeHtml(it.text)}</div><button class="planDel" data-id="${it.id}" aria-label="Remove">✕</button>`;
-    div.addEventListener("click", async (e) => {
-      if (e.target.classList.contains("planDel")) return;
-      const wasDone = it.done;
-      try {
-        const data = await dayplanApi({ action: "toggle", id: it.id });
-        dayplanCache = data.plan;
-        renderTodayBlock();
-        if (!wasDone) registerWin("plan");
-      } catch (err) {
-        $("planListStatus").textContent = `Error: ${err.message}`;
-      }
-    });
-    div.querySelector(".planDel").addEventListener("click", async () => {
-      try {
-        const items = dayplanCache.items.filter(x => x.id !== it.id);
-        const data = await dayplanApi({ action: "set", date: dayplanCache.date, energy: dayplanCache.energy, items });
-        dayplanCache = data.plan;
-        renderTodayBlock();
-      } catch (err) {
-        $("planListStatus").textContent = `Error: ${err.message}`;
-      }
-    });
-    list.appendChild(div);
-  });
-}
-
-async function loadDayplan() {
-  if (!state.pin) { renderTodayBlock(); return; }
-  try {
-    const data = await dayplanApi({ action: "get" });
-    dayplanCache = data.plan;
-  } catch (e) {
-    dayplanCache = null;
-  }
-  renderTodayBlock();
-}
-
-$("planMyDayBtn").addEventListener("click", () => {
-  $("planEmptyWrap").style.display = "none";
-  $("planFormWrap").style.display = "block";
-});
-$("planRedoBtn").addEventListener("click", () => {
-  $("planListWrap").style.display = "none";
-  $("planFormWrap").style.display = "block";
-});
-
-function extractJson(text) {
-  const cleaned = text.replace(/```json|```/g, "").trim();
-  const start = cleaned.indexOf("{");
-  const end = cleaned.lastIndexOf("}");
-  if (start === -1 || end === -1) throw new Error("no JSON found");
-  return JSON.parse(cleaned.slice(start, end + 1));
-}
-
-$("planGenerateBtn").addEventListener("click", async () => {
-  const status = $("planStatus");
-  const energy = $("planEnergy").value;
-  const hours = Math.max(1, parseInt($("planHours").value, 10) || 4);
-  const now = Date.now();
-  const dl = deadlinesCache
-    .filter(d => d.date > now)
-    .sort((a, b) => a.date - b.date)
-    .map(d => `- ${d.label}: in ${Math.ceil((d.date - now) / 86400000)} day(s)`)
-    .join("\n") || "- (no deadlines recorded)";
-  status.textContent = "planning…";
-  $("planGenerateBtn").disabled = true;
-  const sys = `You are a day planner for a university student with ADHD. Today is ${new Date().toDateString()}. Their upcoming deadlines:\n${dl}\n\nThey have ${hours} hour(s) available and their energy is "${energy}". Build today's plan: prioritize the NEAREST deadlines, make each item one concrete physical action of at most 15 words (e.g. "Do BAM problem set 8, questions 1-3" not "study BAM"), size the number of items to energy (very low = 2-3 tiny items, high = up to 6), include one short break or meal if hours > 3. Reply with STRICT JSON only, no markdown, exactly this shape: {"items":["...","..."]}`;
-  try {
-    let parsed;
-    for (let attempt = 0; attempt < 2; attempt++) {
-      const res = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ pin: state.pin, system: sys + (attempt ? "\nREPLY ONLY WITH THE JSON OBJECT." : ""), message: "Plan my day." })
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
-      try { parsed = extractJson(data.text || ""); break; } catch (e) { if (attempt) throw new Error("The AI didn't return a usable plan — try again."); }
-    }
-    const items = (parsed.items || []).slice(0, 6).map(t => ({ text: String(t), done: false }));
-    if (!items.length) throw new Error("Empty plan returned — try again.");
-    const saved = await dayplanApi({ action: "set", date: todayKey(), energy, items });
-    dayplanCache = saved.plan;
-    status.textContent = "";
-    renderTodayBlock();
-  } catch (e) {
-    status.textContent = `Error: ${e.message}`;
-  } finally {
-    $("planGenerateBtn").disabled = false;
-  }
-});
-
-$("planAddBtn").addEventListener("click", async () => {
-  const text = $("planAddInput").value.trim();
-  if (!text || !dayplanCache) return;
-  try {
-    const items = dayplanCache.items.concat([{ text, done: false }]);
-    const data = await dayplanApi({ action: "set", date: dayplanCache.date, energy: dayplanCache.energy, items });
-    dayplanCache = data.plan;
-    $("planAddInput").value = "";
-    renderTodayBlock();
-  } catch (e) {
-    $("planListStatus").textContent = `Error: ${e.message}`;
-  }
-});
-
-$("planToFocusBtn").addEventListener("click", () => {
-  if (!dayplanCache) return;
-  const remaining = dayplanCache.items.filter(it => !it.done).map(it => it.text);
-  if (!remaining.length) { $("planListStatus").textContent = "Everything's done. Nothing left to focus on — go rest."; return; }
-  state.focusQueue = remaining;
-  state.focusRunning = true;
-  saveState(state);
-  showView("focus");
-});
-
-let deadlinesCache = [];
-
-async function deadlinesApi(body) {
-  const res = await fetch("/api/deadlines", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(Object.assign({ pin: state.pin }, body))
-  });
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
-  return data;
-}
-
-function showView(name) {
-  document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
-  $("view-" + name).classList.add("active");
-  window.scrollTo(0, 0);
-  if ("speechSynthesis" in window) speechSynthesis.cancel();
-  if (name === "home") { loadAndRenderDeadlines(); loadDayplan(); renderWinsLine(); renderDailyWisdom(); }
-  if (name === "focus") renderFocusPanel();
-  if (name === "timer") renderTimerPanel();
-  if (name === "braindump") renderBraindumpPanel();
-  if (name === "remind") renderRemindPanel();
-  if (name === "settings") { renderHistory(); loadAndRenderDeadlines(); }
-}
-
-async function loadAndRenderDeadlines() {
-  try {
-    const data = await deadlinesApi({ action: "list" });
-    deadlinesCache = data.deadlines;
-  } catch (e) {
-    const el = $("examCountdown");
-    el.className = "unset";
-    el.textContent = state.pin ? `Couldn't load deadlines: ${e.message}` : "Set your PIN in Settings to sync deadlines";
-    if ($("view-settings").classList.contains("active")) renderDeadlineList();
-    return;
-  }
-  renderExamCountdown();
-  if ($("view-settings").classList.contains("active")) renderDeadlineList();
-}
-
-function upcomingDeadlines() {
-  const now = Date.now();
-  return deadlinesCache
-    .filter(d => d.date > now)
-    .sort((a, b) => a.date - b.date);
-}
-
-function renderExamCountdown() {
-  const el = $("examCountdown");
-  const upcoming = upcomingDeadlines();
-  if (!upcoming.length) {
-    el.className = "unset";
-    el.textContent = deadlinesCache.length ? "All deadlines have passed — add a new one →" : "Add your deadlines in Settings →";
-    return;
-  }
-  const next = upcoming[0];
-  const ms = next.date - Date.now();
-  const days = Math.floor(ms / 86400000);
-  const hours = Math.floor((ms % 86400000) / 3600000);
-  el.className = "";
-  const more = upcoming.length > 1 ? ` (+${upcoming.length - 1} more)` : "";
-  if (days > 0) {
-    el.innerHTML = `<span class="days">${days}</span> day${days === 1 ? "" : "s"}${hours ? ` ${hours}h` : ""} until ${escapeHtml(next.label)}${more}`;
-  } else {
-    const mins = Math.floor((ms % 3600000) / 60000);
-    el.innerHTML = `<span class="days">${hours}h ${mins}m</span> until ${escapeHtml(next.label)}${more}`;
-  }
-}
-
-function renderDeadlineList() {
-  const el = $("deadlineList");
-  el.innerHTML = "";
-  const sorted = [...deadlinesCache].sort((a, b) => a.date - b.date);
-  if (!sorted.length) {
-    el.innerHTML = '<div class="modeDesc" style="margin:0;">No deadlines added yet.</div>';
-    return;
-  }
-  const now = Date.now();
-  sorted.forEach(d => {
-    const div = document.createElement("div");
-    div.className = "histItem";
-    const when = new Date(d.date);
-    const passed = d.date <= now;
-    div.innerHTML = `
-      <div style="font-size:14.5px; color:var(--text); font-weight:600;">${escapeHtml(d.label)}</div>
-      <div class="input" style="${passed ? "color:var(--muted);" : ""}">${when.toLocaleString([], { weekday: "short", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}${passed ? " · passed" : ""}</div>
-      <div class="fbRow"><button class="ghost deadline-del" data-id="${d.id}">Delete</button></div>`;
-    el.appendChild(div);
-  });
-  el.querySelectorAll(".deadline-del").forEach(b => b.addEventListener("click", async () => {
-    try {
-      const data = await deadlinesApi({ action: "delete", id: b.dataset.id });
-      deadlinesCache = data.deadlines;
-      renderDeadlineList();
-      renderExamCountdown();
-    } catch (e) {
-      $("deadlineList").insertAdjacentHTML("afterbegin", `<div class="modeDesc" style="color:var(--danger);">Error: ${escapeHtml(e.message)}</div>`);
-    }
-  }));
-}
-
-$("deadlineAddBtn").addEventListener("click", async () => {
-  const label = $("deadlineLabel").value.trim();
-  const dateVal = $("deadlineDate").value;
-  if (!label) { $("deadlineLabel").focus(); return; }
-  if (!dateVal) { $("deadlineDate").focus(); return; }
-  try {
-    const data = await deadlinesApi({ action: "add", label, date: new Date(dateVal).getTime() });
-    deadlinesCache = data.deadlines;
-    $("deadlineLabel").value = "";
-    $("deadlineDate").value = "";
-    renderDeadlineList();
-    renderExamCountdown();
-  } catch (e) {
-    $("deadlineList").insertAdjacentHTML("afterbegin", `<div class="modeDesc" style="color:var(--danger);">Error: ${escapeHtml(e.message)}</div>`);
-  }
-});
-
-$("ovguQuickAddBtn").addEventListener("click", async () => {
-  const OVGU_EXAMS = [
-    { label: "BAM mock exam window closes", date: new Date("2026-07-09T09:00").getTime() },
-    { label: "AIbDS II Q&A questions due", date: new Date("2026-07-09T12:00").getTime() },
-    { label: "BAM exam", date: new Date("2026-07-16T11:00").getTime() },
-    { label: "AIbDS II exam", date: new Date("2026-07-21T11:00").getTime() },
-    { label: "Company Valuation exam", date: new Date("2026-07-23T11:00").getTime() },
-    { label: "Financial Engineering exam", date: new Date("2026-07-25T11:00").getTime() }
-  ];
-  $("ovguQuickAddBtn").disabled = true;
-  try {
-    let data;
-    for (const e of OVGU_EXAMS) {
-      data = await deadlinesApi({ action: "add", label: e.label, date: e.date });
-    }
-    deadlinesCache = data.deadlines;
-    renderDeadlineList();
-    renderExamCountdown();
-    $("ovguQuickAddBtn").textContent = "Added ✓ (double-check times on elearning.ovgu.de)";
-  } catch (e) {
-    $("ovguQuickAddBtn").textContent = `Error: ${e.message}`;
-    $("ovguQuickAddBtn").disabled = false;
-  }
-});
-setInterval(() => { if ($("view-home").classList.contains("active")) renderExamCountdown(); }, 60000);
-setInterval(() => { if ($("view-home").classList.contains("active")) loadAndRenderDeadlines(); }, 5 * 60000);
-
-function openAiMode(mode) {
-  currentMode = mode;
-  applyModeUI();
-  showView("ai");
-}
-
-document.querySelectorAll("[data-open]").forEach(btn => {
-  btn.addEventListener("click", () => {
-    const target = btn.dataset.open;
-    if (target.startsWith("ai:")) openAiMode(target.slice(3));
-    else showView(target);
-  });
-});
-document.querySelectorAll(".backBtn").forEach(btn => {
-  btn.addEventListener("click", () => showView("home"));
-});
-
-$("aboutMe").value = state.aboutMe || "";
-$("aboutMe").addEventListener("input", () => {
-  state.aboutMe = $("aboutMe").value;
-  saveState(state);
-});
-$("pinInput").value = state.pin;
-$("pinInput").addEventListener("input", () => {
-  state.pin = $("pinInput").value;
-  saveState(state);
-});
-
-function renderHistory() {
-  const el = $("history");
-  el.innerHTML = "";
-  const recent = state.history.slice(-8).reverse();
-  if (!recent.length) { el.innerHTML = '<div class="modeDesc" style="margin:6px 0 0;">Nothing yet.</div>'; return; }
-  recent.forEach(item => {
-    const div = document.createElement("div");
-    div.className = "histItem";
-    const fb = item.feedback;
-    div.innerHTML = `
-      <div class="mode">${item.mode}</div>
-      <div class="input">${escapeHtml(item.input.slice(0, 60))}${item.input.length > 60 ? "…" : ""}</div>
-      <div class="fbRow">
-        <button class="ghost fb-worked ${fb === "worked" ? "picked" : ""}" data-id="${item.id}">helped</button>
-        <button class="ghost fb-notworked ${fb === "notworked" ? "picked" : ""}" data-id="${item.id}">didn't help</button>
-      </div>`;
-    el.appendChild(div);
-  });
-  el.querySelectorAll(".fb-worked").forEach(b => b.addEventListener("click", () => setFeedback(b.dataset.id, "worked")));
-  el.querySelectorAll(".fb-notworked").forEach(b => b.addEventListener("click", () => setFeedback(b.dataset.id, "notworked")));
-}
-function setFeedback(id, val) {
-  const item = state.history.find(h => h.id === id);
-  if (!item) return;
-  item.feedback = item.feedback === val ? null : val;
-  saveState(state);
-  renderHistory();
-}
-function escapeHtml(s) {
-  return s.replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
-}
-
-$("clearHistory").addEventListener("click", () => {
-  if (!confirm("Clear all local history?")) return;
-  state.history = [];
-  saveState(state);
-  renderHistory();
-});
-
-function applyModeUI() {
-  const cfg = modeConfig[currentMode];
-  $("aiTitle").textContent = cfg.title;
-  $("modeDesc").textContent = cfg.desc;
-  $("inputLabel").textContent = cfg.label;
-  $("userInput").placeholder = cfg.placeholder;
-  $("userInput").value = "";
-  $("checkinWrap").style.display = cfg.showCheckin ? "block" : "none";
-  $("checkinWrap").open = false;
-  $("output").innerHTML = "";
-  $("firstStepBox").innerHTML = "";
-  $("status").textContent = "";
-}
-
-function buildHistorySummary() {
-  const recent = state.history.slice(-5);
-  if (!recent.length) return "";
-  const lines = recent.map(h => {
-    const fb = h.feedback ? ` (user said this ${h.feedback === "worked" ? "helped" : "did not help"})` : "";
-    return `- [${h.mode}] input: "${h.input.slice(0,80)}"${fb}`;
-  });
-  return `Recent interactions with this user, for context on what has and hasn't worked:\n${lines.join("\n")}\n`;
-}
-
-function buildSystemPrompt(cfg) {
-  let sys = `You are a direct, concise, warm personal assistant for someone with ADHD. Never be preachy, never pad with filler, never apologize. Get straight to useful content.\n\n`;
-  if (state.aboutMe.trim()) {
-    sys += `What this user has told you about themselves:\n${state.aboutMe.trim()}\n\n`;
-  }
-  const hist = buildHistorySummary();
-  if (hist) sys += hist + "\n";
-  sys += cfg.systemExtra;
-  return sys;
-}
-
-$("submitBtn").addEventListener("click", async () => {
-  const cfg = modeConfig[currentMode];
-  const input = $("userInput").value.trim();
-  if (!input) return;
-
-  let userMsg = input;
-  if (cfg.showCheckin) {
-    userMsg = `Task: ${input}\nEnergy: ${$("energy").value}\nMood: ${$("mood").value}\nDeadline: ${$("deadline").value || "none"}`;
-  }
-
-  const statusEl = $("status");
-  const outputEl = $("output");
-  const firstStepEl = $("firstStepBox");
-  outputEl.textContent = "";
-  firstStepEl.innerHTML = "";
-  statusEl.className = "";
-  statusEl.textContent = "thinking…";
-  $("submitBtn").disabled = true;
-
-  try {
-    const res = await fetch("/api/chat", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        pin: state.pin,
-        system: buildSystemPrompt(cfg),
-        message: userMsg
-      })
-    });
-    const data = await res.json().catch(() => ({}));
-
-    if (res.status === 401) {
-      statusEl.className = "err";
-      statusEl.textContent = "Wrong PIN — set it in Settings and try again.";
-      return;
-    }
-    if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
-
-    const full = data.text || "";
-    renderOutput(full, cfg);
-    statusEl.textContent = "";
-    lastReply = full;
-    $("replayBtn").style.display = full ? "block" : "none";
-    if (voiceRequested || state.voiceOut) speak(full);
-    voiceRequested = false;
-
-    state.history.push({
-      id: String(Date.now()) + Math.random().toString(36).slice(2,7),
-      ts: Date.now(),
-      mode: currentMode,
-      input,
-      output: full,
-      feedback: null
-    });
-    if (state.history.length > 100) state.history = state.history.slice(-100);
-    saveState(state);
-  } catch (e) {
-    statusEl.className = "err";
-    statusEl.textContent = `Error: ${e.message}`;
-  } finally {
-    $("submitBtn").disabled = false;
-  }
-});
-
-function renderOutput(text, cfg) {
-  if (cfg && currentMode === "breakdown") {
-    const m = text.match(/^FIRST:\s*(.+?)(?:\n|$)/i);
-    if (m) {
-      $("firstStepBox").innerHTML = `<div class="firstStep">Do this first: ${escapeHtml(m[1])}</div>`;
-      $("output").textContent = text.replace(/^FIRST:.*(?:\n|$)/i, "").trim();
-      return;
-    }
-  }
-  $("firstStepBox").innerHTML = "";
-  $("output").textContent = text;
-}
-
-let lastReply = "";
-let voiceRequested = false;
-
-function speak(text) {
-  if (!("speechSynthesis" in window) || !text) return;
-  speechSynthesis.cancel();
-  const clean = text.replace(/FIRST:/gi, "First: ").replace(/[*#_`]/g, "");
-  const u = new SpeechSynthesisUtterance(clean.slice(0, 1200));
-  u.rate = 1.0;
-  speechSynthesis.speak(u);
-}
-$("replayBtn").addEventListener("click", () => speak(lastReply));
-
-function renderSpeakToggle() {
-  $("speakToggleBtn").classList.toggle("active", state.voiceOut);
-}
-$("speakToggleBtn").addEventListener("click", () => {
-  state.voiceOut = !state.voiceOut;
-  saveState(state);
-  renderSpeakToggle();
-  if (!state.voiceOut && "speechSynthesis" in window) speechSynthesis.cancel();
-});
-renderSpeakToggle();
-
-let mediaRecorder = null;
-let recordChunks = [];
-
-$("micBtn").addEventListener("click", async () => {
-  const statusEl = $("status");
-  if (mediaRecorder && mediaRecorder.state === "recording") {
-    mediaRecorder.stop();
-    return;
-  }
-  try {
-    if (!navigator.mediaDevices || !window.MediaRecorder) {
-      throw new Error("This browser can't record audio.");
-    }
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    recordChunks = [];
-    const mime = MediaRecorder.isTypeSupported("audio/webm;codecs=opus") ? "audio/webm;codecs=opus"
-      : MediaRecorder.isTypeSupported("audio/ogg;codecs=opus") ? "audio/ogg;codecs=opus" : "";
-    mediaRecorder = mime ? new MediaRecorder(stream, { mimeType: mime }) : new MediaRecorder(stream);
-    mediaRecorder.ondataavailable = (e) => { if (e.data.size) recordChunks.push(e.data); };
-    mediaRecorder.onstop = async () => {
-      stream.getTracks().forEach(t => t.stop());
-      $("micBtn").classList.remove("recording");
-      const blob = new Blob(recordChunks, { type: mediaRecorder.mimeType || "audio/webm" });
-      if (blob.size < 1500) { statusEl.textContent = "Too short — hold the thought and try again."; return; }
-      if (blob.size > 3 * 1024 * 1024) { statusEl.className = "err"; statusEl.textContent = "Too long — keep it under ~45 seconds."; return; }
-      statusEl.className = "";
-      statusEl.textContent = "transcribing…";
-      try {
-        const buf = await blob.arrayBuffer();
-        let binary = "";
-        const bytes = new Uint8Array(buf);
-        for (let i = 0; i < bytes.length; i += 8192) {
-          binary += String.fromCharCode.apply(null, bytes.subarray(i, i + 8192));
-        }
-        const res = await fetch("/api/transcribe", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ pin: state.pin, audio: btoa(binary), mime: blob.type })
-        });
-        const data = await res.json().catch(() => ({}));
-        if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
-        const text = (data.text || "").trim();
-        if (!text) { statusEl.textContent = "Didn't catch that — try again."; return; }
-        $("userInput").value = text;
-        statusEl.textContent = "";
-        voiceRequested = true;
-        $("submitBtn").click();
-      } catch (e) {
-        statusEl.className = "err";
-        statusEl.textContent = e.message;
-      }
-    };
-    mediaRecorder.start();
-    $("micBtn").classList.add("recording");
-    statusEl.className = "";
-    statusEl.textContent = "listening… tap 🎙 again when done";
-    setTimeout(() => { if (mediaRecorder && mediaRecorder.state === "recording") mediaRecorder.stop(); }, 45000);
-  } catch (e) {
-    statusEl.className = "err";
-    statusEl.textContent = /denied|permission/i.test(e.message) ? "Microphone permission denied — allow it in your browser settings." : e.message;
-  }
-});
-
-$("testConnBtn").addEventListener("click", async () => {
-  const out = $("testConnResult");
-  out.textContent = "testing…";
-  try {
-    const res = await fetch("/api/chat", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ pin: state.pin, system: "Reply with exactly: ok", message: "ping" })
-    });
-    const data = await res.json().catch(() => ({}));
-    if (res.ok) {
-      out.textContent = `Working. Model replied: "${(data.text || "").trim().slice(0, 60)}"`;
-    } else {
-      out.textContent = `Failed (HTTP ${res.status}): ${data.error || "unknown error"}`;
-    }
-  } catch (e) {
-    out.textContent = `Failed: ${e.message} (are you opening the deployed URL, not a local file?)`;
-  }
-});
-
-function renderFocusPanel() {
-  $("focusInput").value = state.focusQueue.join("\n");
-  if (state.focusRunning && state.focusQueue.length) {
-    $("focusEditView").style.display = "none";
-    $("focusTaskView").style.display = "block";
-    $("focusCurrentTask").textContent = state.focusQueue[0];
-    $("focusProgress").textContent = `${state.focusQueue.length} task${state.focusQueue.length === 1 ? "" : "s"} left`;
-    $("focusDoneBtn").style.display = "";
-  } else if (state.focusRunning && !state.focusQueue.length) {
-    $("focusEditView").style.display = "none";
-    $("focusTaskView").style.display = "block";
-    $("focusCurrentTask").textContent = "All done.";
-    $("focusProgress").textContent = "";
-    $("focusDoneBtn").style.display = "none";
-  } else {
-    $("focusEditView").style.display = "block";
-    $("focusTaskView").style.display = "none";
-  }
-}
-$("focusStartBtn").addEventListener("click", () => {
-  const lines = $("focusInput").value.split("\n").map(s => s.trim()).filter(Boolean);
-  state.focusQueue = lines;
-  state.focusRunning = lines.length > 0;
-  saveState(state);
-  renderFocusPanel();
-});
-$("focusDoneBtn").addEventListener("click", () => {
-  state.focusQueue.shift();
-  saveState(state);
-  renderFocusPanel();
-  registerWin("focus");
-});
-$("focusEditBtn").addEventListener("click", () => {
-  state.focusRunning = false;
-  saveState(state);
-  renderFocusPanel();
-});
-
-let timerHandle = null;
-let timerPhase = "idle";
-let timerEnd = 0;
-let timerTotal = 1;
-
-function formatTime(ms) {
-  const total = Math.max(0, Math.ceil(ms / 1000));
-  const m = Math.floor(total / 60);
-  const s = total % 60;
-  return `${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`;
-}
-function renderTimerPanel() {
-  $("workMinutes").value = state.timerWork;
-  $("breakMinutes").value = state.timerBreak;
-  updateTimerDisplay();
-}
-function updateTimerDisplay() {
-  const ring = $("timerRing");
-  if (timerPhase === "idle") {
-    $("timerPhase").textContent = "Ready";
-    $("timerDisplay").textContent = `${String(state.timerWork).padStart(2,"0")}:00`;
-    $("timerStartBtn").style.display = "";
-    $("timerStopBtn").style.display = "none";
-    ring.style.setProperty("--p", "0deg");
-  } else {
-    const remaining = Math.max(0, timerEnd - Date.now());
-    $("timerPhase").textContent = timerPhase === "work" ? "Work" : "Break";
-    $("timerDisplay").textContent = formatTime(remaining);
-    $("timerStartBtn").style.display = "none";
-    $("timerStopBtn").style.display = "";
-    const deg = Math.min(360, Math.max(0, (remaining / timerTotal) * 360));
-    ring.style.setProperty("--p", deg.toFixed(1) + "deg");
-  }
-}
-$("workMinutes").addEventListener("change", () => {
-  state.timerWork = Math.max(1, parseInt($("workMinutes").value, 10) || 25);
-  saveState(state);
-  if (timerPhase === "idle") updateTimerDisplay();
-});
-$("breakMinutes").addEventListener("change", () => {
-  state.timerBreak = Math.max(1, parseInt($("breakMinutes").value, 10) || 5);
-  saveState(state);
-});
-$("timerStartBtn").addEventListener("click", () => {
-  timerPhase = "work";
-  timerTotal = state.timerWork * 60000;
-  timerEnd = Date.now() + timerTotal;
-  tickTimer();
-  clearInterval(timerHandle);
-  timerHandle = setInterval(tickTimer, 250);
-});
-$("timerStopBtn").addEventListener("click", () => {
-  if (!confirm("End this session now? A break in progress won't count if you stop early.")) return;
-  clearInterval(timerHandle);
-  timerPhase = "idle";
-  updateTimerDisplay();
-});
-function tickTimer() {
-  const remaining = timerEnd - Date.now();
-  if (remaining <= 0) {
-    if (timerPhase === "work") {
-      timerPhase = "break";
-      timerTotal = state.timerBreak * 60000;
-      timerEnd = Date.now() + timerTotal;
-      registerWin("timer");
-    } else {
-      clearInterval(timerHandle);
-      timerPhase = "idle";
-    }
-  }
-  if ($("view-timer").classList.contains("active")) updateTimerDisplay();
-}
-
-$("brainDumpInput").addEventListener("input", () => {
-  state.brainDump = $("brainDumpInput").value;
-  saveState(state);
-});
-function renderBraindumpPanel() {
-  $("brainDumpInput").value = state.brainDump || "";
-}
-
-let breathHandle = null;
-let breathCycle = 1;
-const breathPhases = ["Breathe in", "Hold", "Breathe out", "Hold"];
-$("calmDownBtn").addEventListener("click", () => {
-  $("breathBlock").style.display = "block";
-  breathCycle = 1;
-  runBreathCycle();
-});
-$("stopBreathBtn").addEventListener("click", stopBreath);
-function runBreathCycle() {
-  let phaseIndex = 0;
-  $("breathCircle").style.transform = "scale(1)";
-  $("breathLabel").textContent = breathPhases[0];
-  $("breathCount").textContent = `Cycle ${breathCycle}`;
-  clearInterval(breathHandle);
-  breathHandle = setInterval(() => {
-    phaseIndex = (phaseIndex + 1) % 4;
-    $("breathLabel").textContent = breathPhases[phaseIndex];
-    if (phaseIndex === 0) {
-      breathCycle++;
-      $("breathCount").textContent = `Cycle ${breathCycle}`;
-      $("breathCircle").style.transform = "scale(1)";
-    } else if (phaseIndex === 2) {
-      $("breathCircle").style.transform = "scale(0.6)";
-    }
-  }, 4000);
-}
-function stopBreath() {
-  clearInterval(breathHandle);
-  if (breathCycle > 1) {
-    const line = STILLNESS_LINES[Math.floor(Math.random() * STILLNESS_LINES.length)];
-    $("breathLabel").textContent = "";
-    $("breathCount").textContent = line;
-    setTimeout(() => { $("breathBlock").style.display = "none"; }, 3500);
-  } else {
-    $("breathBlock").style.display = "none";
-  }
-}
-
-async function remindersApi(body) {
-  const res = await fetch("/api/reminders", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(Object.assign({ pin: state.pin }, body))
-  });
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
-  return data;
-}
-
-function renderRemindList(reminders) {
-  const el = $("remindList");
-  el.innerHTML = "";
-  const upcoming = reminders.filter(r => !r.sent && r.tag !== "daily-nudge").sort((a, b) => a.due - b.due);
-  if (!upcoming.length) {
-    el.innerHTML = '<div class="modeDesc" style="margin:0;">No reminders yet.</div>';
-    return;
-  }
-  const now = Date.now();
-  upcoming.forEach(r => {
-    const div = document.createElement("div");
-    div.className = "histItem";
-    const when = new Date(r.due);
-    const overdue = r.due <= now;
-    div.innerHTML = `
-      <div style="font-size:14.5px; color:var(--text); font-weight:600;">${escapeHtml(r.text)}</div>
-      <div class="input" style="${overdue ? "color:var(--danger);" : ""}">${when.toLocaleString([], { weekday: "short", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}${r.repeat === "daily" ? " · every day" : ""}${overdue ? " · sending soon" : ""}</div>
-      <div class="fbRow"><button class="ghost rem-del" data-id="${r.id}">Delete</button></div>`;
-    el.appendChild(div);
-  });
-  el.querySelectorAll(".rem-del").forEach(b => b.addEventListener("click", async () => {
-    try {
-      const data = await remindersApi({ action: "delete", id: b.dataset.id });
-      renderRemindList(data.reminders);
-    } catch (e) {
-      $("remindStatus").textContent = `Error: ${e.message}`;
-    }
-  }));
-}
-
-async function renderRemindPanel() {
-  const status = $("remindStatus");
-  if (hasNotif && Notification.permission === "granted") {
-    $("enableNotifsBtn").textContent = "Notifications enabled ✓ (tap to re-sync)";
-  }
-  status.textContent = "";
-  try {
-    const data = await remindersApi({ action: "list" });
-    renderRemindList(data.reminders);
-    const nudge = data.reminders.find(r => r.tag === "daily-nudge" && !r.sent);
-    if (nudge) {
-      const t = new Date(nudge.due);
-      $("nudgeStatus").textContent = `Active: "${nudge.text}" every day at ${t.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}.`;
-      $("nudgeTime").value = t.toTimeString().slice(0, 5);
-      $("nudgeText").value = nudge.text;
-    } else {
-      $("nudgeStatus").textContent = "";
-    }
-  } catch (e) {
-    $("remindList").innerHTML = `<div class="modeDesc" style="margin:0; color:var(--danger);">Couldn't load reminders: ${escapeHtml(e.message)}</div>`;
-  }
-}
-
-$("nudgeSetBtn").addEventListener("click", async () => {
-  const out = $("nudgeStatus");
-  const timeVal = $("nudgeTime").value;
-  const text = $("nudgeText").value.trim();
-  if (!timeVal) { out.textContent = "Pick a time."; return; }
-  if (!text) { out.textContent = "Say what the nudge should tell you."; return; }
-  const [h, m] = timeVal.split(":").map(Number);
-  const due = new Date();
-  due.setHours(h, m, 0, 0);
-  if (due.getTime() <= Date.now()) due.setDate(due.getDate() + 1);
-  out.textContent = "saving…";
-  try {
-    const data = await remindersApi({ action: "add", text, due: due.getTime(), repeat: "daily", tag: "daily-nudge" });
-    out.textContent = (hasNotif && Notification.permission === "granted")
-      ? `Set — "${text}" every day at ${timeVal}.`
-      : `Set — but enable notifications above or it won't reach your phone.`;
-    renderRemindList(data.reminders);
-  } catch (e) {
-    out.textContent = `Error: ${e.message}`;
-  }
-});
-
-function urlBase64ToUint8Array(base64String) {
-  const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
-  const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
-  const raw = atob(base64);
-  const arr = new Uint8Array(raw.length);
-  for (let i = 0; i < raw.length; i++) arr[i] = raw.charCodeAt(i);
-  return arr;
-}
-
-$("enableNotifsBtn").addEventListener("click", async () => {
-  const out = $("notifStatus");
-  out.textContent = "setting up…";
-  try {
-    if (!hasNotif || !("serviceWorker" in navigator) || !("PushManager" in window)) {
-      throw new Error("This browser doesn't support push. On iPhone, add the app to your home screen first and open it from there.");
-    }
-    const perm = await Notification.requestPermission();
-    if (perm !== "granted") {
-      throw new Error("Permission denied. Enable notifications for this site in your browser settings.");
-    }
-    const reg = await navigator.serviceWorker.ready;
-    const keyRes = await fetch("/api/vapid-public");
-    const keyData = await keyRes.json().catch(() => ({}));
-    if (!keyRes.ok) throw new Error(keyData.error || "Couldn't get server key");
-    const subscription = await reg.pushManager.subscribe({
-      userVisibleOnly: true,
-      applicationServerKey: urlBase64ToUint8Array(keyData.key)
-    });
-    const res = await fetch("/api/subscribe", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ pin: state.pin, subscription })
-    });
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
-    out.textContent = `Notifications enabled on this device (${data.devices} device${data.devices === 1 ? "" : "s"} registered). Reminders can arrive a few minutes after their set time.`;
-    $("enableNotifsBtn").textContent = "Notifications enabled ✓ (tap to re-sync)";
-  } catch (e) {
-    out.textContent = `Error: ${e.message}${/brave/i.test(navigator.userAgent) ? " — In Brave, also check Settings → Privacy → 'Use Google services for push messaging' is on." : ""}`;
-  }
-});
-
-$("remindAddBtn").addEventListener("click", async () => {
-  const out = $("remindStatus");
-  const text = $("remindText").value.trim();
-  const whenVal = $("remindWhen").value;
-  if (!text) { out.textContent = "Type what to remember."; return; }
-  if (!whenVal) { out.textContent = "Pick a date and time."; return; }
-  const due = new Date(whenVal).getTime();
-  if (!Number.isFinite(due)) { out.textContent = "That date didn't parse — try again."; return; }
-  out.textContent = "saving…";
-  try {
-    const data = await remindersApi({ action: "add", text, due, repeat: $("remindRepeat").value });
-    $("remindText").value = "";
-    out.textContent = (hasNotif && Notification.permission === "granted")
-      ? "Saved."
-      : "Saved — but enable notifications above or your phone won't be told!";
-    renderRemindList(data.reminders);
-  } catch (e) {
-    out.textContent = `Error: ${e.message}`;
-  }
-});
-
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("sw.js").catch(() => {});
-  });
-}
-
-loadAndRenderDeadlines();
-loadDayplan();
-renderWinsLine();
-renderDailyWisdom();
-</script>
+<noscript><p class="noscript">This app needs JavaScript.</p></noscript>
 </body>
 </html>
